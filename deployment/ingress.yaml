@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: geekebmly
+  name: geekebmly
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-staging"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - geekembly.com
+        - www.geekembly.com
+      secretName: geekembly-tls
+  rules:
+    - host: geekembly.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: geekebmly-svc
+                port:
+                  number: 80
+    - host: www.geekembly.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: geekebmly-svc
+                port:
+                  number: 80
