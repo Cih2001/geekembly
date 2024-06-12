@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        app: kuard
+        app: geekebmly
     spec:
       containers:
         - image: nginx:1.27-alpine
