@@ -4,15 +4,23 @@ metadata:
   namespace: geekembly
   generateName: kaniko-docker-workflow-
 spec:
-  entrypoint: docker-commands
-  volumeClaimTemplates: # define volume, same syntax as k8s Pod spec
+  entrypoint: start
+  volumeClaimTemplates:
     - metadata:
-        name: workdir # name of volume claim
+        name: workdir
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 200Mi
+            storage: 4Gi
+  volumes:
+    - name: reg-auth-vol
+      secret:
+        secretName: kaniko-auth
+    - name: ssh-vol
+      secret:
+        secretName: github-ssh-key2
+
   templates:
     - name: kaniko-build
       container:
@@ -21,33 +29,44 @@ spec:
           - /kaniko/executor
         args:
           - --dockerfile=Dockerfile
-          - --context=/workdir
-          - --destination=registry-svc.registry/hello-world:latest
+          - --context=/workdir/geekembly
+          - --destination=registry-svc.registry/geekembly:latest
           - --insecure=true
         volumeMounts:
           - name: workdir
             mountPath: /workdir
           - name: reg-auth-vol
             mountPath: /kaniko/.docker
-      volumes:
-        - name: reg-auth-vol
-          secret:
-            secretName: kaniko-auth
+        resources:
+          limits:
+            ephemeral-storage: 8Gi
+          requests:
+            memory: 2Gi
 
-    - name: generate-context
+    - name: github-clone
+      inputs:
       script:
-        image: alpine:3.11
+        image: bitnami/git:latest
         command: [sh]
         source: |
-          #!/bin/sh
-          echo "FROM nginx:1.27-alpine" > /workdir/Dockerfile
+          #!/bin/bash
+          mkdir -p /root/.ssh
+          cp /github/id_rsa /root/.ssh/
+          chmod 600 /root/.ssh/id_rsa
+          touch /root/.ssh/known_hosts && ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+          cd /workdir
+          git clone git@github.com:Cih2001/geekembly.git
+
         volumeMounts:
           - name: workdir
             mountPath: /workdir
+          - name: ssh-vol
+            mountPath: /github
 
-    - name: docker-commands
+    - name: start
       steps:
-        - - name: generate-dockerfile
-            template: generate-context
+        - - name: clone
+            template: github-clone
         - - name: build-and-push
             template: kaniko-build
