@@ -1,34 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: geekebmly
-  name: geekebmly-dpl
+  namespace: geekembly
+  name: geekembly-dpl
 spec:
   selector:
     matchLabels:
-      app: geekebmly
+      app: geekembly
   replicas: 1
   template:
     metadata:
       labels:
-        app: geekebmly
+        app: geekembly
     spec:
       containers:
-        - image: nginx:1.27-alpine
-          imagePullPolicy: Always
-          name: geekembly
+        - name: geekembly
+          image: docker.registry.geekembly.com/hello-world:latest
           ports:
             - containerPort: 80
+      imagePullSecrets:
+        - name: regcred
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: geekebmly
-  name: geekebmly-svc
+  namespace: geekembly
+  name: geekembly-svc
 spec:
   ports:
     - port: 80
       targetPort: 80
       protocol: TCP
   selector:
-    app: geekebmly
+    app: geekembly
