@@ -3,18 +3,17 @@
 set -e
 
 WORK_DIR=$(pwd)
+BUILD_DIR=$WORK_DIR/build
 
-if [ ! -d "/hugo" ]; then
+if [ ! -d "$BUILD_DIR" ]; then
   echo "creating hugo project"
-  mkdir /hugo && cd /hugo
-  hugo new site docs --format yaml
-  cd docs
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  hugo new site geekembly --format yaml
+  cd geekembly
 	hugo mod init geekembly
-	cp -r $WORK_DIR/hugo.yaml /hugo/docs
+	cp -r $WORK_DIR/hugo.yaml $BUILD_DIR/geekembly
 	hugo mod get -u
 fi
 
-# cd $WORK_DIR && (reflex -r '\.md$' -s -- sh -c './fix_files.sh') &
-# sleep 2
-cp -r $WORK_DIR/docs/* /hugo/docs/content/
-cd /hugo/docs && hugo server -D --bind 0.0.0.0
+cp -r $WORK_DIR/geekembly/* $BUILD_DIR/geekembly/content/
+cd $BUILD_DIR/geekembly && hugo

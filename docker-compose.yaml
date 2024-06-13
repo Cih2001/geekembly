@@ -1,9 +1,11 @@
-version: "3.1"
 services:
   server:
-    image: geekembly:latest
-    ports:
-      - 1313:1313
-      # volumes:
-      #   - .:/src
+    image: geekembly:builder
+    volumes:
+      - .:/src
     command: "./scripts/run.sh"
+  kaniko:
+    image: gcr.io/kaniko-project/executor:latest
+    volumes:
+      - .:/src
+    command: tail -f /dev/null

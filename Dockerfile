@@ -1,10 +1,13 @@
-FROM golang:1.22-alpine3.19
+FROM golang:1.22-alpine3.19 as builder
 
-WORKDIR /src
+WORKDIR /workspace
 
 RUN apk add git
 RUN go install github.com/gohugoio/hugo@latest
 
-COPY . .
+COPY ./geekembly .
 
-EXPOSE 1313
+RUN ./scripts/run.sh
+
+FROM nginx:1.27-alpine
+COPY --from=builder /workspace/build/geekembly/public /usr/share/nginx/html

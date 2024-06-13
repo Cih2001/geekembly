@@ -17,8 +17,7 @@ spec:
         - name: geekembly
           image: docker.registry.geekembly.com/geekembly:latest
           ports:
-            - containerPort: 1313
-          command: ["./scripts/run.sh"]
+            - containerPort: 80
       imagePullSecrets:
         - name: regcred
 ---
@@ -30,7 +29,7 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 1313
+      targetPort: 80
       protocol: TCP
   selector:
     app: geekembly

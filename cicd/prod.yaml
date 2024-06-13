@@ -2,46 +2,145 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   namespace: geekembly
-  generateName: kaniko-docker-workflow-
+  generateName: geekembly-ci-
 spec:
   entrypoint: start
   volumeClaimTemplates:
     - metadata:
-        name: workdir
+        name: workspace
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 4Gi
+            storage: 200Mi
   volumes:
-    - name: reg-auth-vol
-      secret:
-        secretName: kaniko-auth
     - name: ssh-vol
       secret:
-        secretName: github-ssh-key2
+        secretName: github-ssh-key
+    - name: docker-vol
+      secret:
+        secretName: regcred
 
   templates:
     - name: kaniko-build
+      inputs:
+        parameters:
+          - name: DOCKER_REGISTRY_ADDRESS
+          - name: DOCKER_REGISTRY_IMAGE_NAME
+          - name: DOCKER_REGISTRY_IMAGE_TAG
+          - name: DOCKER_FILE
+          - name: INSECURE
+            value: true
       container:
         image: gcr.io/kaniko-project/executor:latest
         command:
           - /kaniko/executor
         args:
-          - --dockerfile=Dockerfile
-          - --context=/workdir/geekembly
-          - --destination=registry-svc.registry/geekembly:latest
-          - --insecure=true
+          - "--dockerfile={{inputs.parameters.DOCKER_FILE}}"
+          - "--context=dir:///workspace"
+          - "--destination={{inputs.parameters.DOCKER_REGISTRY_ADDRESS}}/{{inputs.parameters.DOCKER_REGISTRY_IMAGE_NAME}}:{{inputs.parameters.DOCKER_REGISTRY_IMAGE_TAG}}"
+          - "--insecure={{inputs.parameters.INSECURE}}"
         volumeMounts:
-          - name: workdir
-            mountPath: /workdir
-          - name: reg-auth-vol
-            mountPath: /kaniko/.docker
+          - name: workspace
+            mountPath: /workspace
+          - name: docker-vol
+            mountPath: /kaniko/.docker/config.json
+            subPath: .dockerconfigjson
         resources:
-          limits:
-            ephemeral-storage: 8Gi
           requests:
-            memory: 2Gi
+            memory: 4Gi
+
+    - name: image-check
+      inputs:
+        parameters:
+          - name: DOCKER_REGISTRY_SERVER_PROTOCOL
+            value: "http"
+          - name: DOCKER_REGISTRY_ADDRESS
+          - name: DOCKER_REGISTRY_IMAGE_NAME
+          - name: DOCKER_REGISTRY_IMAGE_TAG
+      script:
+        image: python:alpine3.6
+        command: ["sh"]
+        source: |
+          #!/bin/sh
+          pip install requests &> /dev/null
+
+          python - << EOF
+          import os
+          import requests
+          from requests.auth import HTTPBasicAuth
+
+          protocol = os.getenv('DOCKER_REGISTRY_SERVER_PROTOCOL')
+          address = os.getenv('DOCKER_REGISTRY_ADDRESS')
+          username = os.getenv('DOCKER_REGISTRY_USERNAME')
+          password = os.getenv('DOCKER_REGISTRY_PASSWORD')
+          image = os.getenv('DOCKER_REGISTRY_IMAGE_NAME')
+          tag = os.getenv('DOCKER_REGISTRY_IMAGE_TAG')
+
+          # Check if the credentials are available
+          if username is None or password is None:
+              print("Error: Environment variables for username and/or password are not set.")
+              exit(1)
+
+          url = f"{protocol}://{address}/v2/{image}/tags/list"
+          response = requests.get(url, auth=HTTPBasicAuth(username, password))
+
+          # Check if the request was successful
+          tags = []
+          if response.status_code == 200:
+              tags = response.json()["tags"]
+
+          if tag in tags:
+              print("true")
+          else:
+              print("false")
+          EOF
+
+        env:
+          - name: DOCKER_REGISTRY_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: geekembly-registry-cred
+                key: username
+          - name: DOCKER_REGISTRY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: geekembly-registry-cred
+                key: password
+          - name: DOCKER_REGISTRY_SERVER_PROTOCOL
+            value: "{{inputs.parameters.DOCKER_REGISTRY_SERVER_PROTOCOL}}"
+          - name: DOCKER_REGISTRY_ADDRESS
+            value: "{{inputs.parameters.DOCKER_REGISTRY_ADDRESS}}"
+          - name: DOCKER_REGISTRY_IMAGE_NAME
+            value: "{{inputs.parameters.DOCKER_REGISTRY_IMAGE_NAME}}"
+          - name: DOCKER_REGISTRY_IMAGE_TAG
+            value: "{{inputs.parameters.DOCKER_REGISTRY_IMAGE_TAG}}"
+
+    - name: update-docker-builder
+      steps:
+        - - name: check-repo
+            template: image-check
+            arguments:
+              parameters:
+                - name: DOCKER_REGISTRY_ADDRESS
+                  value: registry-svc.registry
+                - name: DOCKER_REGISTRY_IMAGE_NAME
+                  value: geekembly
+                - name: DOCKER_REGISTRY_IMAGE_TAG
+                  value: builder
+        - - name: upload-builder-image
+            arguments:
+              parameters:
+                - name: DOCKER_REGISTRY_ADDRESS
+                  value: registry-svc.registry
+                - name: DOCKER_REGISTRY_IMAGE_NAME
+                  value: geekembly
+                - name: DOCKER_REGISTRY_IMAGE_TAG
+                  value: builder
+                - name: DOCKER_FILE
+                  value: geekembly/Dockerfile.builder
+            template: kaniko-build
+            when: "{{steps.check-repo.outputs.result}} == false"
 
     - name: github-clone
       inputs:
@@ -55,18 +154,42 @@ spec:
           chmod 600 /root/.ssh/id_rsa
           touch /root/.ssh/known_hosts && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-          cd /workdir
+          cd /workspace
           git clone git@github.com:Cih2001/geekembly.git
 
         volumeMounts:
-          - name: workdir
-            mountPath: /workdir
+          - name: workspace
+            mountPath: /workspace
           - name: ssh-vol
             mountPath: /github
 
+    - name: print-message
+      inputs:
+        parameters:
+          - name: message
+      container:
+        image: alpine:latest
+        command: [sh, -c]
+        args: ["echo result was: {{inputs.parameters.message}}"]
+
     - name: start
-      steps:
-        - - name: clone
+      dag:
+        tasks:
+          - name: clone-repo-task
             template: github-clone
-        - - name: build-and-push
+          - name: update-docker-builder-task
+            template: update-docker-builder
+            dependencies: [clone-repo-task]
+          - name: update-latest-task
             template: kaniko-build
+            dependencies: [update-docker-builder-task]
+            arguments:
+              parameters:
+                - name: DOCKER_REGISTRY_ADDRESS
+                  value: registry-svc.registry
+                - name: DOCKER_REGISTRY_IMAGE_NAME
+                  value: geekembly
+                - name: DOCKER_REGISTRY_IMAGE_TAG
+                  value: latest
+                - name: DOCKER_FILE
+                  value: geekembly/Dockerfile
