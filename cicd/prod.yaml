@@ -46,6 +46,9 @@ spec:
           - name: docker-vol
             mountPath: /kaniko/.docker/config.json
             subPath: .dockerconfigjson
+          - name: docker-vol
+            mountPath: /kaniko/.docker/.dockerconfigjson
+            subPath: .dockerconfigjson
         resources:
           requests:
             memory: 4Gi

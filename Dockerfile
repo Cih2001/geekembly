@@ -1,9 +1,7 @@
-FROM golang:1.22-alpine3.19 as builder
+# FROM golang:1.22-alpine3.19 as builder
+FROM docker.registry.geekembly.com/geekembly:builder as builder
 
 WORKDIR /workspace
-
-RUN apk add git
-RUN go install github.com/gohugoio/hugo@latest
 
 COPY ./geekembly .
 
