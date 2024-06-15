@@ -102,3 +102,7 @@ url = "https://github.com/cih2001"
 name = "linkedin"
 url = "https://linkedin.com/in/hamidreza-ebtehaj"
 
+[[params.socialIcons]]
+name = "email"
+url = "hamidreza.ebtehaj[at]gmail.com"
+
