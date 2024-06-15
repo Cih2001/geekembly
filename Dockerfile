@@ -5,7 +5,7 @@ WORKDIR /workspace
 
 COPY ./geekembly .
 
-RUN ./scripts/run.sh
+RUN ./scripts/run.sh build
 
 FROM nginx:1.27-alpine
 COPY --from=builder /workspace/build/geekembly/public /usr/share/nginx/html

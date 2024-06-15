@@ -1,11 +1,10 @@
 services:
   server:
-    image: geekembly:builder
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
     volumes:
-      - .:/src
-    command: "./scripts/run.sh"
-  kaniko:
-    image: gcr.io/kaniko-project/executor:latest
-    volumes:
-      - .:/src
-    command: tail -f /dev/null
+      - .:/workspace
+    command: "./scripts/run.sh run"
+    ports:
+      - 8080:1313

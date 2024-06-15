@@ -1,6 +1,0 @@
-baseURL: https://geekembly.com
-languageCode: en-us
-title: Geekembly
-module:
-  imports:
-    - path: github.com/adityatelange/hugo-PaperMod
