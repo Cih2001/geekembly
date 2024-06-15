@@ -79,7 +79,7 @@ theme = "hugo-blog-awesome"
   # Setting it to 'auto' applies the color scheme based on the visitor's device color preference.If you don't specify anything, ignore this parameter, or leave it blank,
   # the default value is set to 'auto'.
   # You can take a look at layouts/index.html for more information.
-  description = "Geekembly is a tech-centric weblog where I delve into programming and information security topics. Join me on this digital assembly of geeky insights, coding adventures, and cybersecurity explorations."
+  description = "Geekembly is a tech-centric weblog where I delve into programming and information security topics. Join me on this tech journey as we uncover the secrets of the digital world together!"
   mainSections = ['posts']
   toc = true # set to false to disable table of contents 'globally'
   tocOpen = true # set to true to open table of contents by default
@@ -90,7 +90,7 @@ theme = "hugo-blog-awesome"
   # Note: image is not rendered if the resource(avatar image) is not found. No error is displayed.
   intro = "Geekembly"
   name = "Hamidreza Ebtehaj"
-  description = "Geekembly is a tech-centric weblog where I delve into programming and information security topics. Join me on this digital assembly of geeky insights, coding adventures, and cybersecurity explorations."
+  description = "Geekembly is a tech-centric weblog where I delve into programming and information security topics. Join me on this tech journey as we uncover the secrets of the digital world together!"
 
 ###################################################################
 
