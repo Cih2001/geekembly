@@ -7,7 +7,7 @@ toc: false
 
 ![Me](/pages/me.jpg)
 
-Hi, I'm Hamidreza Ebtehaj, a software engineer and solutions architect based in Berlin.
+Hi :wave:, I'm Hamidreza Ebtehaj, a software engineer and solutions architect based in Berlin.
 
 During the day, I design backend solutions and write Golang code. I'm into DDD, software architectures, and I adore Postgres!
 Off work, I enjoy exploring low-level programming, reverse engineering, and cybersecurity.

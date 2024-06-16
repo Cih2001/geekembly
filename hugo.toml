@@ -68,10 +68,15 @@ theme = "hugo-blog-awesome"
     url = '/posts/'
     weight = 20
   [[Languages.en-gb.menu.main]]
+    pageRef="homelab"
+    name = 'Homelab'
+    url = '/homelab/'
+    weight = 30
+  [[Languages.en-gb.menu.main]]
     pageRef="about"
     name = 'About'
     url = '/about/'
-    weight = 30
+    weight = 40
 
 [Languages.en-gb.params]
   sitename = "Geekembly"
