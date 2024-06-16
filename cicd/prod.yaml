@@ -1,26 +1,9 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Workflow
+kind: WorkflowTemplate
 metadata:
   namespace: geekembly
-  generateName: geekembly-ci-
+  name: prod-ci
 spec:
-  entrypoint: start
-  volumeClaimTemplates:
-    - metadata:
-        name: workspace
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 200Mi
-  volumes:
-    - name: ssh-vol
-      secret:
-        secretName: github-ssh-key
-    - name: docker-vol
-      secret:
-        secretName: regcred
-
   templates:
     - name: kaniko-build
       inputs:

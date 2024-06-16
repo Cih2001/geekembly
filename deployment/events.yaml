@@ -7,33 +7,20 @@ spec:
   nats:
     native:
       # Optional, defaults to 3. If it is < 3, set it to 3, that is the minimal requirement.
-      replicas: 1
+      replicas: 3
       # Optional, authen strategy, "none" or "token", defaults to "none"
-      # auth: token
-      # containerTemplate:
-      #   resources:
-      #     requests:
-      #       cpu: "10m"
-      # metricsContainerTemplate:
-      #   resources:
-      #     requests:
-      #       cpu: "10m"
-      # antiAffinity: false
-      # persistence:
-      #   storageClassName: standard
-      #   accessMode: ReadWriteOnce
-      #   volumeSize: 10Gi
+      auth: token
 ---
-# Info on GitHub Webhook: https://developer.github.com/v3/repos/hooks/#create-a-hook
 apiVersion: argoproj.io/v1alpha1
 kind: EventSource
 metadata:
+  namespace: geekembly
   name: github
 spec:
+  eventBusName: default
   service:
     ports:
-      - name: example
-        port: 12000
+      - port: 12000
         targetPort: 12000
   github:
     geekembly:
@@ -41,53 +28,100 @@ spec:
         - owner: cih2001
           names:
             - geekembly
-      # Github application auth. Instead of using personal token `apiToken` use app PEM
-      #     githubApp:
-      #       privateKey:
-      #         name: github-app-pem
-      #         key: privateKey.pem
-      #       appID: <app id>
-      #       installationID: <app installation id>
-      # Github will send events to following port and endpoint
       webhook:
-        # endpoint to listen to events on
         endpoint: /push
-        # port to run internal HTTP server on
         port: "12000"
-        # HTTP request method to allow. In this case, only POST requests are accepted
         method: POST
-        # url the event-source will use to register at Github.
-        # This url must be reachable from outside the cluster.
-        # The name for the service is in `<event-source-name>-eventsource-svc` format.
-        # You will need to create an Ingress or Openshift Route for the event-source service so that it can be reached from GitHub.
         url: https://github.geekembly.com
       # type of events to listen to.
       # following listens to everything, hence *
       # You can find more info on https://developer.github.com/v3/activity/events/types/
       events:
         - "*"
-
-      # apiToken refers to K8s secret that stores the github api token
-      # if apiToken is provided controller will create webhook on GitHub repo
-      # +optional
       apiToken:
-        # Name of the K8s secret that contains the access token
         name: github-access
-        # Key within the K8s secret whose corresponding value (must be base64 encoded) is access token
         key: token
-
-      #      # webhookSecret refers to K8s secret that stores the github hook secret
-      #      # +optional
       webhookSecret:
-        # Name of the K8s secret that contains the hook secret
         name: github-access
-        # Key within the K8s secret whose corresponding value (must be base64 encoded) is hook secret
         key: secret
-
-      # type of the connection between event-source and Github.
-      # You should set it to false to avoid man-in-the-middle and other attacks.
       insecure: false
-      # Determines if notifications are sent when the webhook is triggered
       active: true
-      # The media type used to serialize the payloads
       contentType: json
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: github
+  namespace: geekembly
+spec:
+  template:
+    serviceAccountName: default
+  dependencies:
+    - name: github-dep
+      eventSourceName: github
+      eventName: geekembly
+      filters:
+        data:
+          # Type of Github event that triggered the delivery: [pull_request, push, issues, label, ...]
+          # https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads
+          - path: headers.X-Github-Event
+            type: string
+            value:
+              - push
+  triggers:
+    - template:
+        name: github-workflow-trigger
+        k8s:
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: prod-ci-workflow-
+                namespace: geekembly
+              spec:
+                volumeClaimTemplates:
+                  - metadata:
+                      name: workspace
+                    spec:
+                      accessModes: ["ReadWriteOnce"]
+                      resources:
+                        requests:
+                          storage: 200Mi
+                volumes:
+                  - name: ssh-vol
+                    secret:
+                      secretName: github-ssh-key
+                  - name: docker-vol
+                    secret:
+                      secretName: regcred
+                entrypoint: main
+                templates:
+                  - name: main
+                    steps:
+                      - - name: start
+                          templateRef:
+                            name: prod-ci
+                            template: start
+                      # parameters:
+                      #   - src:
+                      #       dependencyName: github-dep
+                      #       dataKey: body.pull_request.title
+                      #     dest: spec.arguments.parameters.0.value
+                      #   - src:
+                      #       dependencyName: github-dep
+                      #       dataKey: body.pull_request.number
+                      #     dest: spec.arguments.parameters.1.value
+                      #   - src:
+                      #       dependencyName: github-dep
+                      #       dataTemplate: "{{ .Input.body.pull_request.head.sha | substr 0 7 }}"
+                      #     dest: spec.arguments.parameters.2.value
+                      #   # Append pull request number and short sha to dynamically assign workflow name <github-21500-2c065a>
+                      #   - src:
+                      #       dependencyName: github-dep
+                      #       dataTemplate: "{{ .Input.body.pull_request.number }}-{{ .Input.body.pull_request.head.sha | substr 0 7 }}"
+                      #     dest: metadata.name
+                      #     operation: append
+      retryStrategy:
+        steps: 3
