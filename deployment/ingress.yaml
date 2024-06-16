@@ -4,7 +4,7 @@ metadata:
   namespace: geekembly
   name: geekembly
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    cert-manager.io/cluster-issuer: "buypass-prod"
     acme.cert-manager.io/http01-edit-in-place: "true"
 spec:
   ingressClassName: nginx
