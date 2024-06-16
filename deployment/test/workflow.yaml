@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: prod-ci-workflow-
+  namespace: geekembly
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        - - name: cd
+            templateRef:
+              name: argocd-sync-and-wait
+              template: argocd-sync-and-wait
+            arguments:
+              parameters:
+                - name: application-name
+                  value: geekembly.com
+                - name: argocd-server-address
+                  value: argocd-server.argocd
+                - name: argocd-credentials-secret
+                  value: argocd-cred
+                - name: flags
+                  value: --insecure

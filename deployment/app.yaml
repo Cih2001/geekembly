@@ -7,7 +7,7 @@ spec:
   destination:
     namespace: geekembly
     server: https://kubernetes.default.svc
-  project: default
+  project: geekembly
   source:
     path: deployment
     repoURL: https://github.com/Cih2001/geekembly.git

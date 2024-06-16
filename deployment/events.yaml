@@ -100,10 +100,24 @@ spec:
                 templates:
                   - name: main
                     steps:
-                      - - name: start
+                      - - name: ci
                           templateRef:
                             name: prod-ci
                             template: start
+                      - - name: cd
+                          templateRef:
+                            name: argocd-sync-and-wait
+                            template: argocd-sync-and-wait
+                          arguments:
+                            parameters:
+                              - name: application-name
+                                value: geekembly.com
+                              - name: argocd-server-address
+                                value: argocd-server.argocd
+                              - name: argocd-credentials-secret
+                                value: argocd-cred
+                              - name: flags
+                                value: --insecure
                       # parameters:
                       #   - src:
                       #       dependencyName: github-dep
