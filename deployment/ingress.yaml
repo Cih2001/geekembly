@@ -13,6 +13,9 @@ spec:
         - geekembly.com
         - www.geekembly.com
       secretName: geekembly-tls
+    - hosts:
+        - github.geekembly.com
+      secretName: github-geekembly-tls
   rules:
     - host: geekembly.com
       http:
@@ -34,3 +37,13 @@ spec:
                 name: geekembly-svc
                 port:
                   number: 80
+    - host: github.geekembly.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: github-eventsource-svc
+                port:
+                  number: 12000
