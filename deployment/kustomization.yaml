@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - ingress.yaml
+  - argocd-sync.yaml
+  - cicd.yaml
+  - events.yaml
+  - namespace.yaml
+  - secrets.yaml
+  - workflows.yaml
+
+namespace: geekembly
+images:
+  - name: geekembly
+    newName: docker.registry.geekembly.com/geekembly
+    newTag: 074d2936a31928483da4f0ec888a53c882e38a9b

@@ -1,15 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
-kind: WorkflowTemplate
+kind: Workflow
 metadata:
   namespace: geekembly
-  name: argocd-sync-and-wait
-  annotations:
-    workflows.argoproj.io/description: >-
-      This task syncs (deploys) an Argo CD application and waits for it to be healthy.
-    workflows.argoproj.io/tags: argocd
-    workflows.argoproj.io/version: ">= 2.9.0"
+  generateName: prod-cd-
 spec:
-  entrypoint: argocd-sync-and-wait
+  entrypoint: start
+  arguments:
+    parameters:
+      - name: push-skipped
+        value: "false"
+      - name: release-tag
+        value: "074d2936a31928483da4f0ec888a53c882e38a9b"
+
   templates:
     - name: argocd-sync-and-wait
       inputs:
@@ -51,3 +53,32 @@ spec:
 
           argocd app sync {{inputs.parameters.application-name}} --revision {{inputs.parameters.revision}} {{inputs.parameters.flags}}
           argocd app wait {{inputs.parameters.application-name}} --health {{inputs.parameters.flags}}
+
+    - name: print-message
+      inputs:
+        parameters:
+          - name: message
+      container:
+        image: alpine:latest
+        command: [sh, -c]
+        args: ["echo result was: {{inputs.parameters.message}}"]
+
+    - name: update-deployment-tag
+      steps:
+        - - name: print-message-step
+            template: print-message
+            arguments:
+              parameters:
+                - name: message
+                  value: hello
+
+    - name: start
+      inputs:
+        parameters:
+          - name: push-skipped
+          - name: release-tag
+      dag:
+        tasks:
+          - name: update-deployment-tag-task
+            template: update-deployment-tag
+            when: "{{inputs.parameters.push-skipped}} == false"

@@ -1,9 +1,25 @@
 apiVersion: argoproj.io/v1alpha1
-kind: WorkflowTemplate
+kind: Workflow
 metadata:
   namespace: geekembly
-  name: prod-ci
+  generateName: prod-ci-test
 spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: workspace
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 200Mi
+  volumes:
+    - name: ssh-vol
+      secret:
+        secretName: github-ssh-key
+    - name: docker-vol
+      secret:
+        secretName: regcred
+  entrypoint: start
   templates:
     - name: kaniko-build
       inputs:
@@ -177,6 +193,14 @@ spec:
         args: ["echo result was: {{inputs.parameters.message}}"]
 
     - name: start
+      outputs:
+        parameters:
+          - name: push-skipped
+            valueFrom:
+              parameter: "{{tasks.check-image-tag-task.outputs.result}}"
+          - name: release-tag
+            valueFrom:
+              parameter: "{{tasks.code-tag-task.outputs.result}}"
       dag:
         tasks:
           - name: clone-repo-task
@@ -186,6 +210,7 @@ spec:
             dependencies: [clone-repo-task]
           - name: code-tag-task
             template: github-tree-hash
+            dependencies: [clone-repo-task]
             arguments:
               parameters:
                 - name: path
@@ -205,7 +230,8 @@ spec:
                   value: "{{tasks.code-tag-task.outputs.result}}"
           - name: update-latest-task
             template: kaniko-build
-            dependencies: [update-docker-builder-task, code-tag-task]
+            dependencies:
+              [update-docker-builder-task, code-tag-task, check-image-tag-task]
             arguments:
               parameters:
                 - name: DOCKER_REGISTRY_ADDRESS

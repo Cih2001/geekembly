@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: geekembly
   name: geekembly-dpl
 spec:
   selector:
@@ -15,7 +14,7 @@ spec:
     spec:
       containers:
         - name: geekembly
-          image: docker.registry.geekembly.com/geekembly:latest
+          image: geekembly:latest
           ports:
             - containerPort: 80
       imagePullSecrets:
@@ -24,7 +23,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: geekembly
   name: geekembly-svc
 spec:
   ports:
