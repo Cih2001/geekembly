@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - ingress.yaml
-  - argocd-sync.yaml
   - cicd.yaml
   - events.yaml
   - namespace.yaml

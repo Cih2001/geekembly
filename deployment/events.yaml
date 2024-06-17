@@ -100,26 +100,21 @@ spec:
                 templates:
                   - name: main
                     steps:
-                      - - name: ci
+                      - - name: ci-step
                           templateRef:
                             name: prod-ci
                             template: start
-                      - - name: cd
+                      - - name: cd-step
                           templateRef:
-                            name: argocd-sync-and-wait
-                            template: argocd-sync-and-wait
+                            name: prod-cd
+                            template: start
                           arguments:
                             parameters:
-                              - name: application-name
-                                value: geekembly.com
-                              - name: deployment-name
-                                value: geekembly-dpl
-                              - name: argocd-server-address
-                                value: argocd-server.argocd
-                              - name: argocd-credentials-secret
-                                value: argocd-cred
-                              - name: flags
-                                value: --insecure
+                              - name: push-skipped
+                                value: "{{steps.ci-step.outputs.parameters.push-skipped}}"
+                              - name: release-tag
+                                value: "{{steps.ci-step.outputs.parameters.release-tag}}"
+
                       # parameters:
                       #   - src:
                       #       dependencyName: github-dep

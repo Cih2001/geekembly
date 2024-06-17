@@ -4,13 +4,26 @@ metadata:
   namespace: geekembly
   generateName: prod-cd-
 spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: workspace
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 200Mi
+  volumes:
+    - name: ssh-vol
+      secret:
+        secretName: github-ssh-key
   entrypoint: start
   arguments:
     parameters:
       - name: push-skipped
-        value: "false"
+        value: "true"
       - name: release-tag
-        value: "074d2936a31928483da4f0ec888a53c882e38a9b"
+        value: latest
+        # value: "074d2936a31928483da4f0ec888a53c882e38a9b"
 
   templates:
     - name: argocd-sync-and-wait
@@ -54,23 +67,71 @@ spec:
           argocd app sync {{inputs.parameters.application-name}} --revision {{inputs.parameters.revision}} {{inputs.parameters.flags}}
           argocd app wait {{inputs.parameters.application-name}} --health {{inputs.parameters.flags}}
 
-    - name: print-message
+    - name: update-deployment-tag
       inputs:
         parameters:
-          - name: message
-      container:
-        image: alpine:latest
-        command: [sh, -c]
-        args: ["echo result was: {{inputs.parameters.message}}"]
+          - name: deployment-dir
+          - name: release-tag
+          - name: git-user
+            value: release-bot
+          - name: git-email
+            value: release@bot.com
+          - name: branch
+            value: main
+      script:
+        image: bitnami/git
+        command: [sh]
+        source: |
+          #!/bin/bash
 
-    - name: update-deployment-tag
-      steps:
-        - - name: print-message-step
-            template: print-message
-            arguments:
-              parameters:
-                - name: message
-                  value: hello
+          set -eu
+
+          mkdir -p /root/.ssh
+          cp /github/id_rsa /root/.ssh/
+          chmod 600 /root/.ssh/id_rsa
+          touch /root/.ssh/known_hosts && ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+          cd {{inputs.parameters.deployment-dir}}
+
+          echo BEFORE:
+          cat kustomization.yaml
+
+          echo AFTER:
+          cat kustomization.yaml | sed -e 's@newTag.*@newTag: "{{inputs.parameters.release-tag}}"@g'| tee kustomization.yaml
+
+          git config user.name "{{inputs.parameters.git-user}}"
+          git config user.email "{{inputs.parameters.git-email}}"
+          git checkout {{inputs.parameters.branch}}
+          git pull
+          git add kustomization.yaml
+          git commit -m "updated deployment with the release-tag {{inputs.parameters.release-tag}}"
+          git push -u origin {{inputs.parameters.branch}} -f
+
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+          - name: ssh-vol
+            mountPath: /github
+
+    - name: github-clone
+      script:
+        image: bitnami/git:latest
+        command: [sh]
+        source: |
+          #!/bin/bash
+          mkdir -p /root/.ssh
+          cp /github/id_rsa /root/.ssh/
+          chmod 600 /root/.ssh/id_rsa
+          touch /root/.ssh/known_hosts && ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+          cd /workspace
+          git clone git@github.com:Cih2001/geekembly.git
+
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+          - name: ssh-vol
+            mountPath: /github
 
     - name: start
       inputs:
@@ -79,6 +140,30 @@ spec:
           - name: release-tag
       dag:
         tasks:
+          - name: github-clone-task
+            template: github-clone
           - name: update-deployment-tag-task
             template: update-deployment-tag
+            dependencies: [github-clone-task]
+            arguments:
+              parameters:
+                - name: deployment-dir
+                  value: /workspace/geekembly/deployment
+                - name: release-tag
+                  value: "{{inputs.parameters.release-tag}}"
             when: "{{inputs.parameters.push-skipped}} == false"
+          - name: argocd-sync-and-wait-task
+            template: argocd-sync-and-wait
+            dependencies: [update-deployment-tag-task]
+            arguments:
+              parameters:
+                - name: application-name
+                  value: geekembly.com
+                - name: deployment-name
+                  value: geekembly-dpl
+                - name: argocd-server-address
+                  value: argocd-server.argocd
+                - name: argocd-credentials-secret
+                  value: argocd-cred
+                - name: flags
+                  value: --insecure
