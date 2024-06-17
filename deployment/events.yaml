@@ -112,6 +112,8 @@ spec:
                             parameters:
                               - name: application-name
                                 value: geekembly.com
+                              - name: deployment-name
+                                value: geekembly-dpl
                               - name: argocd-server-address
                                 value: argocd-server.argocd
                               - name: argocd-credentials-secret

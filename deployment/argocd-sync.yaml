@@ -6,10 +6,7 @@ metadata:
   annotations:
     workflows.argoproj.io/description: >-
       This task syncs (deploys) an Argo CD application and waits for it to be healthy.
-
-      To do so, it requires the address of the Argo CD server and some form of
-      authentication either a username/password or an authentication token.
-    workflows.argoproj.io/maintainer: "@dcherman"
+      If specified, you can force sync a deployment.
     workflows.argoproj.io/tags: argocd
     workflows.argoproj.io/version: ">= 2.9.0"
 spec:
@@ -23,7 +20,11 @@ spec:
           - name: application-name
           - name: revision
             value: HEAD
+          - name: deployment-name
+            description: when provided, the specified deployment will be forced synced.
+            default: ""
           - name: flags
+            description: additional flags to pass to argocd
             value: --
           - name: argocd-server-address
           - name: argocd-credentials-secret
@@ -37,36 +38,27 @@ spec:
                 name: "{{inputs.parameters.argocd-credentials-secret}}"
                 key: token
                 optional: true
-          - name: ARGOCD_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: "{{inputs.parameters.argocd-credentials-secret}}"
-                key: username
-                optional: true
-          - name: ARGOCD_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: "{{inputs.parameters.argocd-credentials-secret}}"
-                key: password
-                optional: true
           - name: ARGOCD_SERVER
             value: "{{inputs.parameters.argocd-server-address}}"
+          - name: DEPLOYMENT_NAME
+            value: "{{inputs.parameters.deployment-name}}"
         source: |
           #!/bin/bash
 
           set -euo pipefail
 
-          if [[ -z $ARGOCD_AUTH_TOKEN ]] && [[ -z "$ARGOCD_USERNAME" || -z "$ARGOCD_PASSWORD" ]]; then
-            echo "Either the ARGOCD_AUTH_TOKEN must be specified, or the ARGOCD_USERNAME/ARGOCD_PASSWORD must be specified."
+          if [ -z $ARGOCD_AUTH_TOKEN ]; then
+            echo "ARGOCD_AUTH_TOKEN must be specified."
             exit 1
           fi 
 
-          if [ -z $ARGOCD_AUTH_TOKEN ]; then
-            yes | argocd login "$ARGOCD_SERVER" --username=$ARGOCD_USERNAME --password=$ARGOCD_PASSWORD {{inputs.parameters.flags}}
-          fi
-
           echo "Running as ArgoCD User:"
-          argocd account get-user-info --insecure {{inputs.parameters.flags}}
+          argocd account get-user-info {{inputs.parameters.flags}}
 
           argocd app sync {{inputs.parameters.application-name}} --revision {{inputs.parameters.revision}} {{inputs.parameters.flags}}
+          if [ -n "$DEPLOYMENT_NAME" ]; then 
+            echo "force syncing $DEPLOYMENT_NAME"
+            argocd app sync {{inputs.parameters.application-name}} --revision {{inputs.parameters.revision}} --resource apps:Deployment:$DEPLOYMENT_NAME --force {{inputs.parameters.flags}}
+          fi
+
           argocd app wait {{inputs.parameters.application-name}} --health {{inputs.parameters.flags}}
