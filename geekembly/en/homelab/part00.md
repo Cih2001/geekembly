@@ -21,7 +21,7 @@ I'm gearing up to craft a series of blog posts that will be super user-friendly 
 - Configuring [Metallb](https://metallb.io/) and [Cert-Manager](https://cert-manager.io/).
 - Embracing the entire Argo :octopus: ecosystem – [Argo Workflows](https://argoproj.github.io/workflows/), [Argo Events](https://argoproj.github.io/events/), and [Argo CD](https://argoproj.github.io/cd/).
 - Setting up our personal Object Storage with [Minio](https://min.io/) and using it to create our own container [registry](https://hub.docker.com/_/registry).
-- Secrets? We can push them to Github if they are [Sealed](https://github.com/bitnami-labs/sealed-secrets)!
+- Secrets? We can push them on Github if they are [Sealed](https://github.com/bitnami-labs/sealed-secrets)!
 - Getting this very blog up and running on our server, powered by [Hugo](https://gohugo.io/)!
 - Keeping an eye on the cluster using [Prometheus](https://prometheus.io/) and [Grafana](https://grafana.com/).
 
