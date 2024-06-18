@@ -1,0 +1,7 @@
+FROM alpine:3.19
+
+WORKDIR /workspace
+
+RUN apk add git
+RUN apk add go
+RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community hugo

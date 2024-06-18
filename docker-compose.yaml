@@ -2,9 +2,11 @@ services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile.builder
+      dockerfile: Dockerfile.local
     volumes:
       - .:/workspace
-    command: "./scripts/run.sh run"
+      - ./hugo.toml:/workspace/build/geekembly/hugo.toml
+      - ./geekembly:/workspace/build/geekembly/content
+    command: "./scripts/local.sh"
     ports:
       - 8080:1313
