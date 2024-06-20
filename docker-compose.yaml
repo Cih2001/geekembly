@@ -10,3 +10,7 @@ services:
     command: "./scripts/local.sh"
     ports:
       - 8080:1313
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - 8081:80

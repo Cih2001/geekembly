@@ -17,8 +17,40 @@ spec:
           image: geekembly:latest
           ports:
             - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/nginx_status.conf
+              subPath: nginx_status.conf
+        - name: nginx-exporter
+          image: nginx/nginx-prometheus-exporter:latest
+          args:
+            - -nginx.scrape-uri=http://localhost:8080/stub_status
+          ports:
+            - containerPort: 9113
+              name: metrics
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
       imagePullSecrets:
         - name: regcred
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: geekembly
+  name: nginx-config
+data:
+  nginx_status.conf: |
+    server {
+        listen 8080;
+
+        location /stub_status {
+            stub_status;
+            allow all;
+        }
+    }
 ---
 apiVersion: v1
 kind: Service
@@ -27,7 +59,10 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 80
+      name: http
+      protocol: TCP
+    - port: 9113
+      name: metrics
       protocol: TCP
   selector:
     app: geekembly
