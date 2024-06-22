@@ -1,0 +1,168 @@
+---
+title: Part 2 - Proxmox, Enters the HyperVisor!
+date: 2024-06-20
+---
+
+**Note**: As with my previous posts, I've used the domain name `geekembly.com` throughout the setup. Be sure to replace it with your own domain name!
+
+## Installation
+
+Installing Proxmox is straightforward. Simply download its [ISO](https://www.proxmox.com/en/downloads), burn it onto a flash drive, and proceed with the installation. I recommend connecting your server to the modem using an Ethernet cable to ensure a stable connection. During installation, set the default gateway address for both IPv4 and IPv6.
+
+After installation, you can access the web portal at `https://<ip-address>:8006`. To simplify this, I added a record in my `/etc/hosts` file like `192.168.0.10 pve.geekembly.com`, allowing me to access it at `https://pve.geekembly.com`. If you encounter a certificate warning, it's normal—just proceed and use private browsing mode. Also, add your SSH key to the Proxmox server by running `ssh root@pve.geekembly.com` for convenient shell access.
+
+### Network Setup
+
+Proxmox creates `vmbr0` by default. Ensure it is bridged to your network interface so your virtual machines can receive an IP address from your modem’s DHCP server. You can do this through the UI or by editing `/etc/network/interfaces`. I recommend setting a static IP to ensure consistent accessibility, even if your modem restarts. Here’s a sample configuration, which you may need to adjust based on your network interfaces and their names:
+
+```
+auto lo
+iface lo inet loopback
+
+# You might not have this many interfaces, names also might defer
+iface enp88s0 inet6 manual
+
+iface enp87s0 inet6 manual
+
+iface enp2s0f0np0 inet6 manual
+
+iface enp2s0f1np1 inet6 manual
+
+iface wlp89s0 inet6 manual
+
+auto vmbr0
+iface vmbr0 inet static
+    address 192.168.0.2/24 # Your subnet might be different
+    gateway 192.168.0.1
+    bridge-ports enp88s0 # Choose the name of your network interface that is connected to your modem
+    bridge-stp off
+    bridge-fd 0
+    bridge-vlan-aware yes
+    bridge-vids 2-4094
+
+iface vmbr0 inet6 static
+    address 2aXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XX61/64
+    gateway 2aXX:XXXX:XXXX:XXXX::
+```
+
+### Terrafrom Provisioner Account
+
+To provision our Kubernetes cluster, we will use Terraform, requiring Proxmox API access. Create a role `TerraformProv`, add a user, and assign the role. SSH into your Proxmox server and execute the following:
+
+```sh
+pveum role add TerrafromProv "Datastore.Allocate Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify SDN.Use VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt User.Modify"
+pveum user add terraform-prov@pve --password <choose-a-secure-password>
+pveum user list
+pveum aclmod / -user terraform-prov@pve -role TerraformProv
+```
+
+We will use this username and password in our Terraform modules later.
+
+### Cloud config and enabling snippets
+
+Installing an operating system like Ubuntu or Debian can be time-consuming. Additionally, you have numerous clicks and steps to follow.
+Instead, we will consider cloud images, which expedite the process significantly.
+
+Cloud providers like Amazon and Digital Ocean use cloud images to create VPS instances quickly. The pre-installed OS is simply written to the virtual machine’s hard disk, including boot partitions, making the VM ready for use almost instantly.
+
+If you are wondering how these cloud images are configured, [Cloud-init](https://cloud-init.io/) is the answer. Proxmox supports cloud-init out of the box, and for efficient management, it's good to store cloud-init configuration files as snippets.
+
+Enable snippets in the `Datacenter > Storage` section of Proxmox before using them, as it is disabled by default in new installations. This is necessary for later configuring Terraform modules.
+
+### Installing a debian cloud image
+
+We will manually create a Debian VM to understand the process before automating it with Terraform. We will name this VM `Edge` and use it for cluster isolation later.
+
+Download the Debian cloud image from: `https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2`
+
+In Proxmox UI, navigate to `Datacenter > local > ISO Images > Download from URL`.
+
+![ISO](/homelab/proxmox/01.png)
+
+Click on Query URL and make sure to rename the extension to `.img`.
+
+Next, create a VM by right-clicking on your datacenter node (e.g., `pve` or `pve01`), then selecting `Create VM`.
+
+#### General
+
+In the General tab, set the VM ID (I'm using 104 as an example).
+
+![ISO](/homelab/proxmox/02.png)
+
+#### OS
+
+In the OS tab, set `Do not use any media`, choose `Linux` as the OS type, and version `6.x`.
+
+![ISO](/homelab/proxmox/03.png)
+
+#### System
+
+On the System page, select `VirtIO-GPU` and `VirtIO SCSI single`.
+
+![ISO](/homelab/proxmox/04.png)
+
+#### Disk
+
+Remove the default disk, as we will create it later.
+
+![ISO](/homelab/proxmox/05.png)
+
+#### CPU
+
+In the CPU tab, set the type to `host` to use the host CPU.
+
+![ISO](/homelab/proxmox/06.png)
+
+#### Memory
+
+Allocate 256 MB of memory for your OS.
+
+![ISO](/homelab/proxmox/07.png)
+
+#### Network
+
+For the network device, choose `vmbr0` as the bridge.
+
+![ISO](/homelab/proxmox/08.png)
+
+#### Confirmation
+
+Make sure `Start after created` is unchecked in the confirmation.
+
+![ISO](/homelab/proxmox/09.png)
+
+#### Writing Cloud Image to disk
+
+Now, SSH into your Proxmox node and create a disk for your VM:
+
+```sh
+qm disk import 104 /var/lib/vz/template/iso/debian-12-generic-amd64-cloud-image.img local-lvm
+```
+
+Replace `104` with your VM ID, adjust the image path, and specify your chosen storage.
+
+You should see a success message indicating the disk import.
+
+Next, go to the hardware tab of your VM, find the unused disk, and add it to the VM.
+
+![ISO](/homelab/proxmox/10.png)
+
+#### Cloud Init
+
+Again, at hardware tab, click on Add, and add a cloud init drive. Select the storage and click on add.
+
+![ISO](/homelab/proxmox/11.png)
+
+Now head to Cloud-Init tab, and set user to `root`, set a password for the root user. Also click on IP Config, and set net0 IPv4 to DHCP.
+
+![ISO](/homelab/proxmox/12.png)
+
+#### Boot Options
+
+Finally, in the Options tab, set the boot order to `scsi0` and deselect other boot devices.
+
+![ISO](/homelab/proxmox/13.png)
+
+You can now power on the VM and log in using the root credentials you've set.
+
+We are ready to move on to the next part: Cluster provisioning with Terraform. 🚀 Stay tuned!
