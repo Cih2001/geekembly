@@ -91,7 +91,7 @@ theme = "hugo-blog-awesome"
   goToTop = true # set to false to disable 'go to top' button
 
 [Languages.en-gb.params.author]
-  avatar = "jiyan.png" # put the file in assets folder; also ensure that image has same height and width
+  avatar = "img/jiyan.png" # put the file in assets folder; also ensure that image has same height and width
   # Note: image is not rendered if the resource(avatar image) is not found. No error is displayed.
   intro = "Geekembly"
   name = "Hamidreza Ebtehaj"
