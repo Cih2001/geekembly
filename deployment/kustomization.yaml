@@ -8,6 +8,7 @@ resources:
   - namespace.yaml
   - secrets.yaml
   - workflows.yaml
+  - servicemonitor.yaml
 
 namespace: geekembly
 images:
