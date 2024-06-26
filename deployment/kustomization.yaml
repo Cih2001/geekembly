@@ -14,4 +14,4 @@ namespace: geekembly
 images:
   - name: geekembly
     newName: docker.registry.geekembly.com/geekembly
-    newTag: "69a1bf41beeea31b462c148311fc40b06cea942e"
+    newTag: "e94d18535dd336fd25e7e4703e13517e917b130c"
