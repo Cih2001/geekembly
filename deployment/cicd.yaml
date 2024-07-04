@@ -117,7 +117,7 @@ spec:
             arguments:
               parameters:
                 - name: DOCKER_REGISTRY_ADDRESS
-                  value: https://docker.registry.geekembly.com
+                  value: docker.registry.geekembly.com
                 - name: DOCKER_REGISTRY_IMAGE_NAME
                   value: geekembly
                 - name: DOCKER_REGISTRY_IMAGE_TAG
@@ -209,7 +209,7 @@ spec:
             arguments:
               parameters:
                 - name: DOCKER_REGISTRY_ADDRESS
-                  value: https://docker.registry.geekembly.com
+                  value: docker.registry.geekembly.com
                 - name: DOCKER_REGISTRY_IMAGE_NAME
                   value: geekembly
                 - name: DOCKER_REGISTRY_IMAGE_TAG
