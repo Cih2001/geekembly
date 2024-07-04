@@ -22,7 +22,6 @@ spec:
           - "--dockerfile={{inputs.parameters.DOCKER_FILE}}"
           - "--context=dir:///workspace"
           - "--destination={{inputs.parameters.DOCKER_REGISTRY_ADDRESS}}/{{inputs.parameters.DOCKER_REGISTRY_IMAGE_NAME}}:{{inputs.parameters.DOCKER_REGISTRY_IMAGE_TAG}}"
-          - "--insecure={{inputs.parameters.INSECURE}}"
         volumeMounts:
           - name: workspace
             mountPath: /workspace
@@ -118,7 +117,7 @@ spec:
             arguments:
               parameters:
                 - name: DOCKER_REGISTRY_ADDRESS
-                  value: registry-svc.registry
+                  value: https://docker.registry.geekembly.com
                 - name: DOCKER_REGISTRY_IMAGE_NAME
                   value: geekembly
                 - name: DOCKER_REGISTRY_IMAGE_TAG
@@ -210,7 +209,7 @@ spec:
             arguments:
               parameters:
                 - name: DOCKER_REGISTRY_ADDRESS
-                  value: registry-svc.registry
+                  value: https://docker.registry.geekembly.com
                 - name: DOCKER_REGISTRY_IMAGE_NAME
                   value: geekembly
                 - name: DOCKER_REGISTRY_IMAGE_TAG
