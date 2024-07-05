@@ -12,8 +12,6 @@ spec:
           - name: DOCKER_REGISTRY_IMAGE_NAME
           - name: DOCKER_REGISTRY_IMAGE_TAG
           - name: DOCKER_FILE
-          - name: INSECURE
-            value: true
       container:
         image: gcr.io/kaniko-project/executor:latest
         command:
