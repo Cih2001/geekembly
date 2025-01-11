@@ -18,6 +18,7 @@ sed -i 's/\$narrow-size: 720px;/\$narrow-size: 900px;/' themes/hugo-blog-awesome
 cp -r $WORK_DIR/hugo.toml $BUILD_DIR/geekembly
 cp -r $WORK_DIR/geekembly/* $BUILD_DIR/geekembly/content/
 cp -r $WORK_DIR/assets/* $BUILD_DIR/geekembly/assets/
+cp -r $WORK_DIR/layouts/* $BUILD_DIR/geekembly/layouts/
 
 if [ "$1" = "build" ]; then
 	HUGO_ENV=production hugo --minify

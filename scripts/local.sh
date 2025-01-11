@@ -2,17 +2,20 @@
 
 set -e
 
-WORK_DIR=$(pwd)
-BUILD_DIR=$WORK_DIR/build
+BUILD_DIR=./build
+if [ -d "$BUILD_DIR" ]; then
+	rm -rf $BUILD_DIR
+fi
+mkdir $BUILD_DIR
+cd $BUILD_DIR
 
-echo "creating hugo project"
-cd $BUILD_DIR/geekembly
+hugo new site . --force
+git clone https://github.com/hugo-sid/hugo-blog-awesome.git themes/hugo-blog-awesome
+sed -i 's/\$narrow-size: 720px;/\$narrow-size: 900px;/' themes/hugo-blog-awesome/assets/sass/main.scss
 
-if [ ! -e "hugo.toml"]; then
-	hugo new site .
-	git clone https://github.com/hugo-sid/hugo-blog-awesome.git themes/hugo-blog-awesome
-	sed -i 's/\$narrow-size: 720px;/\$narrow-size: 900px;/' themes/hugo-blog-awesome/assets/sass/main.scss
-	cp -r $WORK_DIR/hugo.toml $BUILD_DIR/geekembly
-fi;
+rm hugo.toml && ln -s "../hugo.toml" "./hugo.toml"
+rm -rf content && ln -s "../geekembly" "./content"
+rm -rf assets && ln -s "../assets" "./assets"
+rm -rf layouts && ln -s "../layouts" "./layouts"
 
 hugo server --minify --bind 0.0.0.0

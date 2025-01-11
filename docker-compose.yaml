@@ -5,8 +5,6 @@ services:
       dockerfile: Dockerfile.local
     volumes:
       - .:/workspace
-      - ./hugo.toml:/workspace/build/geekembly/hugo.toml
-      - ./geekembly:/workspace/build/geekembly/content
     command: "./scripts/local.sh"
     ports:
       - 8080:1313
