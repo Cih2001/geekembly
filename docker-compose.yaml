@@ -5,6 +5,6 @@ services:
       dockerfile: Dockerfile.local
     volumes:
       - .:/workspace
-    command: "./scripts/local.sh"
+    command: "./scripts/local.sh build"
     ports:
       - 8080:1313

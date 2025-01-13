@@ -1,0 +1,206 @@
+<div id="p5-canvas-container"></div>
+<style>
+  #p5-canvas-container {
+    position: relative;
+		transform: translate(+25%, 0);
+    overflow: hidden;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+<script>
+	let tileUnknown, tileOne, tileTwo, tileThree,
+		tileFour, tileFive, tileSix, tileSeven,
+		tileEight, tileEmpty, tileExploded, tileFlag,
+		tileMine;
+
+	function preload() {
+		tileOne = loadImage('/posts/img/minesweeper/Tile1.png');
+		tileTwo = loadImage('/posts/img/minesweeper/Tile2.png');
+		tileThree = loadImage('/posts/img/minesweeper/Tile3.png');
+		tileFour = loadImage('/posts/img/minesweeper/Tile4.png');
+		tileFive = loadImage('/posts/img/minesweeper/Tile5.png');
+		tileSix = loadImage('/posts/img/minesweeper/Tile6.png');
+		tileSeven = loadImage('/posts/img/minesweeper/Tile7.png');
+		tileEight = loadImage('/posts/img/minesweeper/Tile8.png');
+		tileEmpty = loadImage('/posts/img/minesweeper/TileEmpty.png');
+		tileExploded = loadImage('/posts/img/minesweeper/TileExploded.png');
+		tileFlag = loadImage('/posts/img/minesweeper/TileFlag.png');
+		tileMine = loadImage('/posts/img/minesweeper/TileMine.png');
+		tileUnknown = loadImage('/posts/img/minesweeper/TileUnknown.png');
+		tileUnknownMine = loadImage('/posts/img/minesweeper/TileUnknownMine.png');
+		tileQuestion = loadImage('/posts/img/minesweeper/TileQuestion.png');
+		tileUp = loadImage('/posts/img/minesweeper/TileUp.png');
+		tileDown = loadImage('/posts/img/minesweeper/TileDown.png');
+		tileLeft = loadImage('/posts/img/minesweeper/TileLeft.png');
+		tileRight = loadImage('/posts/img/minesweeper/TileRight.png');
+	}
+
+	const tileSize = 40;
+	const gridSize = 10;
+
+	let grid = [];
+	let frame = 0;
+	let frameRate = 10;
+
+	const State = Object.freeze({
+		UNKNOWN: 'unknown',
+		REVEALED: 'revealed',
+		MINE: 'mine',
+		EXPECT: 'expect',
+		LEFT: 'left',
+		RIGHT: 'right',
+		DOWN: 'down',
+		UP: 'up',
+	})
+
+	function setup() {
+		const canvas = createCanvas(400, 400);
+		canvas.parent('p5-canvas-container');
+		canvas.elt.addEventListener('contextmenu', (event) => {
+			event.preventDefault();
+		});
+
+		grid = [
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.MINE, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.MINE, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.MINE, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+			State.MINE, State.MINE, State.UNKNOWN, State.UNKNOWN, State.MINE, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+			State.UNKNOWN, State.UNKNOWN, State.MINE, State.MINE, State.UNKNOWN, State.MINE, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.MINE, State.MINE, State.MINE, State.UNKNOWN,
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.MINE,
+			State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN, State.UNKNOWN,
+		];
+	}
+
+	let stack = [];
+
+	function draw() {
+		background(220);
+
+		for (let row = 0; row < gridSize; row += 1) {
+			for (let col = 0; col < gridSize; col += 1) {
+				let x = col * tileSize;
+				let y = row * tileSize;
+				let idx = row * gridSize + col;
+				switch (grid[idx]) {
+ 					case State.MINE: image(tileUnknownMine, x, y, tileSize, tileSize); break;
+ 					case State.REVEALED: reveal(row, col); break;
+ 					case State.EXPECT: image(tileQuestion, x, y, tileSize, tileSize); break;
+ 					case State.UP: image(tileUp, x, y, tileSize, tileSize); break;
+ 					case State.DOWN: image(tileDown, x, y, tileSize, tileSize); break;
+ 					case State.LEFT: image(tileLeft, x, y, tileSize, tileSize); break;
+ 					case State.RIGHT: image(tileRight, x, y, tileSize, tileSize); break;
+					default: image(tileUnknown, x, y, tileSize, tileSize);
+				}
+			}
+		}
+
+		if (stack.length === 0) {
+			return;
+		}
+
+		frame = (frame + 1) % frameRate;
+		if (frame !== 0) {
+			return;
+		}
+
+		let item = stack[stack.length-1];
+		let row = item[0];
+		let col = item[1];
+		if (dfs(row, col)) {
+			let idx = row * gridSize + col;
+			grid[idx] = State.REVEALED;
+			stack.pop();
+		};
+	}
+
+	function reveal(row, col) {
+		let steps = [
+			[-1, -1], [-1,0], [-1, 1],
+			[0, -1], [0,1],
+			[1, -1], [1,0], [1, 1],
+		]
+
+		let mines = 0;
+		steps.forEach((step) => {
+			let nextRow = row + step[0];
+			let nextCol = col + step[1];
+
+			if (nextRow < 0 || nextRow >= gridSize) return;
+			if (nextCol < 0 || nextCol >= gridSize) return;
+
+			let nextIdx = nextRow * gridSize + nextCol;
+			if (grid[nextIdx] === State.MINE) {
+				mines += 1
+			} 
+		});
+
+		let x = col * tileSize;
+		let y = row * tileSize;
+		let idx = row * gridSize + col;
+		switch (mines) {
+			case 0: image(tileEmpty, x, y, tileSize, tileSize); break;
+			case 1: image(tileOne, x, y, tileSize, tileSize); break;
+			case 2: image(tileTwo, x, y, tileSize, tileSize); break;
+			case 3: image(tileThree, x, y, tileSize, tileSize); break;
+			case 4: image(tileFour, x, y, tileSize, tileSize); break;
+			case 5: image(tileFive, x, y, tileSize, tileSize); break;
+			case 6: image(tileSix, x, y, tileSize, tileSize); break;
+			case 7: image(tileSeven, x, y, tileSize, tileSize); break;
+			case 8: image(tileEight, x, y, tileSize, tileSize); break;
+		}
+
+	}
+
+	function dfs(row, col) {
+		let idx = row * gridSize + col;
+		let steps = [[0, 1], [1, 0], [0, -1], [-1, 0], ];
+		for (let index = 0; index < 4; index++) {
+			let step = steps[index];
+			let nextRow = row + step[0];
+			let nextCol = col + step[1];
+
+			if (nextRow < 0 || nextRow >= gridSize) continue;
+			if (nextCol < 0 || nextCol >= gridSize) continue;
+
+			let nextIdx = nextRow * gridSize + nextCol;
+			if (grid[nextIdx] !== State.UNKNOWN) {
+				continue;
+			}
+
+			stack.push([nextRow, nextCol]);
+			switch(index) {
+				case 0: grid[idx] = State.RIGHT; break;
+				case 1: grid[idx] = State.DOWN; break;
+				case 2: grid[idx] = State.LEFT; break;
+				case 3: grid[idx] = State.UP; break;
+			}
+			return false;
+		};
+
+		return true;
+	}
+
+	function mousePressed() {
+    let row = Math.floor(mouseY / tileSize);
+    let col = Math.floor(mouseX / tileSize);
+    let idx = row * gridSize + col;
+    if (row < 0 || row >= gridSize) return;
+    if (col < 0 || col >= gridSize) return;
+
+		if (mouseButton === RIGHT && grid[idx] === State.UNKNOWN) {
+			stack.push([row,col]);
+			return;
+		}
+
+		if (mouseButton === LEFT) {
+			if (grid[idx] === State.MINE) {
+				grid[idx] = State.UNKNOWN;
+			} else {
+				grid[idx] = State.MINE;
+			}
+		}
+	}
+</script>

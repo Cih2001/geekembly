@@ -23,7 +23,7 @@ cp -r $WORK_DIR/layouts/* $BUILD_DIR/geekembly/layouts/
 if [ "$1" = "build" ]; then
 	HUGO_ENV=production hugo --minify
 elif [ "$1" = "run" ]; then
-	hugo server --bind 0.0.0.0
+	hugo server --liveReload --bind 0.0.0.0 
 else
 	echo "invalid argument: $1"
 	exit 1

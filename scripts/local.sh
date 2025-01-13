@@ -18,4 +18,8 @@ rm -rf content && ln -s "../geekembly" "./content"
 rm -rf assets && ln -s "../assets" "./assets"
 rm -rf layouts && ln -s "../layouts" "./layouts"
 
-hugo server --minify --bind 0.0.0.0
+if [ "$1" = "build" ]; then
+	HUGO_ENV=production hugo --minify
+else
+	hugo server --minify --bind 0.0.0.0
+fi
