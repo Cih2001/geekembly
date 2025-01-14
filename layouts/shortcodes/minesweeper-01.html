@@ -85,13 +85,13 @@
 				let y = row * tileSize;
 				let idx = row * gridSize + col;
 				switch (grid[idx]) {
- 					case State.MINE: image(tileUnknownMine, x, y, tileSize, tileSize); break;
- 					case State.REVEALED: reveal(row, col); break;
- 					case State.EXPECT: image(tileQuestion, x, y, tileSize, tileSize); break;
- 					case State.UP: image(tileUp, x, y, tileSize, tileSize); break;
- 					case State.DOWN: image(tileDown, x, y, tileSize, tileSize); break;
- 					case State.LEFT: image(tileLeft, x, y, tileSize, tileSize); break;
- 					case State.RIGHT: image(tileRight, x, y, tileSize, tileSize); break;
+					case State.MINE: image(tileUnknownMine, x, y, tileSize, tileSize); break;
+					case State.REVEALED: reveal(row, col); break;
+					case State.EXPECT: image(tileQuestion, x, y, tileSize, tileSize); break;
+					case State.UP: image(tileUp, x, y, tileSize, tileSize); break;
+					case State.DOWN: image(tileDown, x, y, tileSize, tileSize); break;
+					case State.LEFT: image(tileLeft, x, y, tileSize, tileSize); break;
+					case State.RIGHT: image(tileRight, x, y, tileSize, tileSize); break;
 					default: image(tileUnknown, x, y, tileSize, tileSize);
 				}
 			}
@@ -116,7 +116,7 @@
 		};
 	}
 
-	function reveal(row, col) {
+	function count_mines_around(row, col) {
 		let steps = [
 			[-1, -1], [-1,0], [-1, 1],
 			[0, -1], [0,1],
@@ -137,6 +137,11 @@
 			} 
 		});
 
+		return mines;
+	}
+
+	function reveal(row, col) {
+		const mines = count_mines_around(row, col);
 		let x = col * tileSize;
 		let y = row * tileSize;
 		let idx = row * gridSize + col;
@@ -156,6 +161,10 @@
 
 	function dfs(row, col) {
 		let idx = row * gridSize + col;
+		if (count_mines_around(row, col) > 0) {
+			return true;
+		}
+
 		let steps = [[0, 1], [1, 0], [0, -1], [-1, 0], ];
 		for (let index = 0; index < 4; index++) {
 			let step = steps[index];
@@ -167,6 +176,10 @@
 
 			let nextIdx = nextRow * gridSize + nextCol;
 			if (grid[nextIdx] !== State.UNKNOWN) {
+				continue;
+			}
+			if (count_mines_around(nextRow, nextCol) > 0) {
+				grid[nextIdx] = State.REVEALED;
 				continue;
 			}
 
