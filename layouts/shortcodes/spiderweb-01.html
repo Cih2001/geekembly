@@ -1,0 +1,66 @@
+<style>
+  #p5-canvas-container {
+    position: relative;
+    transform: translate(+25%, 0);
+    overflow: hidden;
+  }
+</style>
+<div>
+  <label for="sidesSlider">Sides:</label>
+  <input type="range" id="sidesSlider" min="3" max="50" value="10" />
+</div>
+<div>
+  <label for="intervalSlider">intervals:</label>
+  <input type="range" id="intervalSlider" min="1" max="50" value="10" />
+</div>
+<div id="p5-canvas-container"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+<script>
+  let sidesSlider;
+  let intervalSlider;
+
+  const width = 500;
+  const height = 500;
+  const interval = 7;
+
+  function setup() {
+    sidesSlider = select("#sidesSlider");
+    intervalSlider = select("#intervalSlider");
+
+    const canvas = createCanvas(width, height);
+    canvas.parent("p5-canvas-container");
+  }
+
+  function draw() {
+    background(0);
+    translate(width / 2, height / 2);
+    let sides = sidesSlider.value();
+    let interval = intervalSlider.value();
+
+    let angle = 0;
+    strokeWeight(1);
+    stroke("yellow");
+    for (i = 0; i < sides; i++) {
+      angle += (2 * PI) / sides;
+      x = width * cos(angle);
+      y = height * sin(angle);
+      line(0, 0, x, y);
+    }
+    let prevx = 0;
+    let prevy = 0;
+    let radious = 0;
+    stroke("magenta");
+    strokeWeight(3);
+    // move
+    // translate(width / 2, height / 2);
+    for (i = 0; -width < prevx && prevx < width; i++) {
+      angle += (2 * PI) / sides;
+      x = radious * cos(angle);
+      y = radious * sin(angle);
+      line(prevx, prevy, x, y);
+      radious += interval;
+      prevx = x;
+      prevy = y;
+    }
+  }
+</script>
