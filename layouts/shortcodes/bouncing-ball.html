@@ -1,0 +1,90 @@
+<style>
+  .canvas-container {
+    display: flex;
+    justify-content: space-around;
+  }
+</style>
+
+<div>
+  <label for="accelerationSlider">Acceleration:</label>
+  <input type="range" id="accelerationSlider" min="1" max="15" value="5" />
+</div>
+<div>
+  <label for="xVelocitySlider">Horizental Speed:</label>
+  <input type="range" id="xVelocitySlider" min="0" max="50" value="10" />
+</div>
+<div>
+  <label for="elasticitySlider">Elasticity:</label>
+  <input type="range" id="elasticitySlider" min="0" max="50" value="10" />
+</div>
+
+<div class="canvas-container">
+  <div id="p5-canvas-container-1"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+<script>
+  let accelerationSlider;
+
+  const width = 800;
+  const height = 400;
+  const time_increment = 0.001;
+  const diameter = 50;
+  const ground = height - diameter / 2;
+
+  let x = diameter / 2;
+  let y = diameter / 2;
+  let velocity = 0;
+  let time = 0;
+  let points = [];
+  function reset() {
+    x = diameter / 2;
+    y = diameter / 2;
+    velocity = 0;
+    time = 0;
+    points = [];
+  }
+
+  function tick() {
+    let acceleration = accelerationSlider.value();
+    let x_velocity = xVelocitySlider.value();
+    let elasticity = 2 - elasticitySlider.value() / 50;
+    points.push({x: x, y: y});
+    velocity += acceleration * time;
+    y += velocity * time;
+    if (y >= ground) {
+      y = ground;
+      velocity = -velocity / elasticity;
+    }
+    x += time * x_velocity;
+    time += time_increment;
+    if (x >= width - diameter) reset();
+  }
+
+  function setup() {
+    accelerationSlider = select("#accelerationSlider");
+    xVelocitySlider = select("#xVelocitySlider");
+    elasticitySlider = select("#elasticitySlider");
+
+    createCanvas(width, height);
+  }
+
+  function draw() {
+    background(0);
+    fill(255);
+    stroke("black");
+    textSize(10);
+    text(`X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}`, width - 200, 50);
+    text(`Y Velocity: ${velocity.toFixed(2)}`, width - 200, 70);
+    textSize(40);
+    text("🏀", x - 25, y + 13);
+
+    stroke("orange");
+    strokeWeight(3);
+    for (let i = 0; i < points.length; i++) {
+      point(points[i].x, points[i].y);
+    }
+
+    tick();
+  }
+</script>
