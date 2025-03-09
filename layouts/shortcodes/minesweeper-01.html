@@ -124,7 +124,7 @@
       State.MINE,
       State.UNKNOWN,
       State.UNKNOWN,
-      State.MINE,
+      State.UNKNOWN,
       State.UNKNOWN,
       State.UNKNOWN,
       State.UNKNOWN,
@@ -352,12 +352,12 @@
     if (row < 0 || row >= gridSize) return;
     if (col < 0 || col >= gridSize) return;
 
-    if (mouseButton === RIGHT && grid[idx] === State.UNKNOWN) {
+    if (mouseButton === LEFT && grid[idx] === State.UNKNOWN) {
       stack.push([row, col]);
       return;
     }
 
-    if (mouseButton === LEFT) {
+    if (mouseButton === RIGHT) {
       if (grid[idx] === State.MINE) {
         grid[idx] = State.UNKNOWN;
       } else {
