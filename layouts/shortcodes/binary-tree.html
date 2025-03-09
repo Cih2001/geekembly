@@ -1,0 +1,57 @@
+<style>
+  .canvas-container {
+    display: flex;
+    justify-content: space-around;
+  }
+</style>
+
+<div>
+  <label for="angleSlider">Angle:</label>
+  <input type="range" id="angleSlider" min="2" max="15" value="8" />
+</div>
+<div>
+  <label for="heightSlider">Height:</label>
+  <input type="range" id="heightSlider" min="1" max="10" value="7" />
+</div>
+
+<div class="canvas-container">
+  <div id="p5-canvas-container-1"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+<script>
+  const width = 800;
+  const height = 600;
+  let treeHeight;
+
+  let angleSlider;
+  function setup() {
+    angleSlider = select("#angleSlider");
+    heightSlider = select("#heightSlider");
+
+    createCanvas(width, height);
+  }
+
+  function draw() {
+    clear();
+    stroke("brown");
+    recurse(width / 2, height, 0, PI / 2);
+  }
+
+  function recurse(x1, y1, level, angle) {
+    treeHeight = heightSlider.value();
+    if (level > treeHeight) {
+      return;
+    }
+
+    const length = height / treeHeight;
+    const x2 = x1 + length * cos(angle);
+    const y2 = y1 - length * sin(angle);
+    strokeWeight(treeHeight - level);
+
+    line(x1, y1, x2, y2);
+    let step = PI / angleSlider.value();
+    recurse(x2, y2, level + 1, angle + step);
+    recurse(x2, y2, level + 1, angle - step);
+  }
+</script>

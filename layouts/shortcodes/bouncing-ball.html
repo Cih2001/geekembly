@@ -70,9 +70,9 @@
   }
 
   function draw() {
-    background(0);
-    fill(255);
-    stroke("black");
+    clear();
+    fill("orange");
+    stroke(0, 0);
     textSize(10);
     text(`X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}`, width - 200, 50);
     text(`Y Velocity: ${velocity.toFixed(2)}`, width - 200, 70);

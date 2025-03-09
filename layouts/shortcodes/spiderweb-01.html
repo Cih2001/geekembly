@@ -32,14 +32,14 @@
   }
 
   function draw() {
-    background(0);
+    clear();
     translate(width / 2, height / 2);
     let sides = sidesSlider.value();
     let interval = intervalSlider.value();
 
     let angle = 0;
     strokeWeight(1);
-    stroke("yellow");
+    stroke("blue");
     for (i = 0; i < sides; i++) {
       angle += (2 * PI) / sides;
       x = width * cos(angle);
