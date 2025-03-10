@@ -7,34 +7,42 @@
 
 <div>
   <label for="angleSlider">Angle:</label>
-  <input type="range" id="angleSlider" min="2" max="15" value="8" />
+  <input type="range" id="angleSlider" min="2" max="15" value="5" />
 </div>
 <div>
   <label for="heightSlider">Height:</label>
-  <input type="range" id="heightSlider" min="1" max="10" value="10" />
+  <input type="range" id="heightSlider" min="1" max="10" value="7" />
+</div>
+<div>
+  <label for="blowingCheckbox">Are you blowing to the screen?:</label>
+  <input type="checkbox" id="blowingCheckbox" />
 </div>
 
-<div class="canvas-container">
-  <div id="p5-canvas-container-1"></div>
-</div>
+<div id="p5-canvas-container"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
 <script>
   const width = 800;
   const height = 600;
+  let blowingCheckbox;
   let treeHeight;
 
   let angleSlider;
   function setup() {
     angleSlider = select("#angleSlider");
     heightSlider = select("#heightSlider");
+    blowingCheckbox = select("#blowingCheckbox");
 
-    createCanvas(width, height);
+    const canvas = createCanvas(width, height);
+    canvas.parent("p5-canvas-container");
   }
 
   function draw() {
     clear();
     stroke("brown");
+    fill("brown");
+
+    // text(`X: ${mouseX.toFixed(2)}, Y: ${mouseY.toFixed(2)}`, width - 200, 50);
     recurse(width / 2, height, 0, PI / 2);
   }
 
@@ -54,8 +62,30 @@
     }
 
     const length = (height / sum(treeHeight)) * (treeHeight - level);
-    const x2 = x1 + length * cos(angle);
-    const y2 = y1 - length * sin(angle);
+    let x2 = x1 + length * cos(angle);
+    let y2 = y1 - length * sin(angle);
+
+    if (blowingCheckbox.elt.checked) {
+      let x = mouseX > 0 ? mouseX : 0;
+      if (x > width) x = width;
+      let y = mouseY > 0 ? mouseY : 0;
+      if (y > height) y = height;
+      const distance = sqrt((x - x1) * (x - x1) + (y - y1) + (y - y1));
+      let int_percent = distance / (width + height);
+      if (int_percent < 0.01) int_percent = 0.01;
+      const int_x2 = lerp(x2, x, int_percent);
+      const int_y2 = lerp(y2, y, int_percent);
+
+      const int_distance = sqrt(
+        (int_x2 - x2) * (int_x2 - x2) + (int_y2 - y2) + (int_y2 - y2),
+      );
+
+      if (int_distance > 1) {
+        x2 = int_x2;
+        y2 = int_y2;
+      }
+    }
+
     strokeWeight(treeHeight - level);
 
     line(x1, y1, x2, y2);
