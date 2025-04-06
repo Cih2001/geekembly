@@ -1,0 +1,151 @@
+<style>
+  .canvas-container {
+    display: flex;
+    justify-content: space-around;
+  }
+</style>
+
+<div>
+  <label for="sidesSlider">Number of branches:</label>
+  <input type="range" id="sidesSlider" min="2" max="6" value="3" />
+</div>
+<div>
+  <label for="levelSlider">Tree Height:</label>
+  <input type="range" id="levelSlider" min="1" max="8" value="5" />
+</div>
+<div>
+  <label for="branchAngleSlider">Angle:</label>
+  <input type="range" id="branchAngleSlider" min="1" max="10" value="6" />
+</div>
+
+<div id="p5-canvas-container"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+<script>
+  const width = 800;
+  const height = 600;
+  const coreH = 50;
+
+  let coordinate;
+  const h = 200;
+  let angle;
+  let font;
+
+  let levelSlider;
+  let sidesSlider;
+  let branchAngleSlider;
+
+  function preload() {
+    font = loadFont("/posts/fonts/inconsolata.otf");
+  }
+
+  function setup() {
+    const canvas = createCanvas(width, height, WEBGL);
+    levelSlider = select("#levelSlider");
+    sidesSlider = select("#sidesSlider");
+    branchAngleSlider = select("#branchAngleSlider");
+
+    camera(-2200, -800, 1000, 0, -200, 0);
+    canvas.parent("p5-canvas-container");
+    textFont(font);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    coordinate = buildGeometry(createCoordinates);
+  }
+
+  function recurse(level) {
+    if (level > levelSlider.value()) {
+      return;
+    }
+
+    let angle = (2 * PI) / sidesSlider.value();
+    let branchHeight = (2 * h) / level;
+    let oldHeight = 2 * h;
+    if (level > 1) {
+      oldHeight = (2 * h) / (level - 1);
+    }
+
+    for (let i = 0; i < sidesSlider.value(); i++) {
+      push();
+      translate(0, oldHeight / 2, 0);
+      rotateY(i * angle);
+      let ba = (2 * PI) / (2 + branchAngleSlider.value() / 10);
+      rotateX(ba);
+      translate(0, -branchHeight / 2, 0);
+      cylinder(20 / level, branchHeight);
+
+      rotateX(PI);
+      recurse(level + 1);
+      pop();
+    }
+  }
+
+  function draw() {
+    let bgColor = getComputedStyle(document.body)
+      .getPropertyValue("background-color")
+      .trim();
+    let strokeColor = getComputedStyle(document.body)
+      .getPropertyValue("color")
+      .trim();
+
+    background(bgColor);
+    stroke(strokeColor);
+
+    let fillColor = lerpColor(bgColor, strokeColor, 0.2);
+    fill(fillColor);
+
+    rotateX(-PI);
+    orbitControl();
+
+    push();
+    cylinder(30, 2 * h);
+    recurse(1);
+    pop();
+
+    push();
+    translate(-300, -200, 0);
+    drawCoordinates();
+    pop();
+  }
+
+  function drawCoordinates() {
+    model(coordinate);
+    push();
+    translate(coreH, 0, 0);
+    fill("red");
+    text("x", 0, 0);
+    pop();
+
+    push();
+    translate(0, coreH, 0);
+    rotateX(-PI);
+    fill("red");
+    text("y", 0, 0);
+    pop();
+
+    push();
+    translate(0, 0, coreH);
+    fill("red");
+    text("z", 0, 0);
+    pop();
+  }
+
+  function createCoordinates() {
+    push();
+    translate(0, coreH / 2, 0);
+    cylinder(2, coreH);
+    pop();
+
+    push();
+    translate(coreH / 2, 0, 0);
+    rotateZ(PI / 2);
+    cylinder(2, coreH);
+    pop();
+
+    push();
+    translate(0, 0, coreH / 2);
+    rotateX(PI / 2);
+    cylinder(2, coreH);
+    pop();
+  }
+</script>
