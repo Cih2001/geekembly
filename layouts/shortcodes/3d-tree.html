@@ -29,15 +29,10 @@
   let coordinate;
   const h = 200;
   let angle;
-  let font;
 
   let levelSlider;
   let sidesSlider;
   let branchAngleSlider;
-
-  function preload() {
-    font = loadFont("/posts/fonts/inconsolata.otf");
-  }
 
   function setup() {
     const canvas = createCanvas(width, height, WEBGL);
@@ -47,9 +42,11 @@
 
     camera(-2200, -800, 1000, 0, -200, 0);
     canvas.parent("p5-canvas-container");
+    font = loadFont("/posts/fonts/inconsolata.otf");
     textFont(font);
     textSize(32);
     textAlign(CENTER, CENTER);
+
     coordinate = buildGeometry(createCoordinates);
   }
 

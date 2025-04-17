@@ -3,3 +3,4 @@ build
 venv
 .env
 .dockerconfigjson
+.tar.gz
