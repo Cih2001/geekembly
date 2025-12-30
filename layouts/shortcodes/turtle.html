@@ -1,0 +1,95 @@
+<style>
+  .canvas-container {
+    display: flex;
+    justify-content: space-around;
+  }
+</style>
+
+<div>
+  <label for="sidesSlider">Number of sides:</label>
+  <input type="range" id="sidesSlider" min="3" max="20" value="4" />
+</div>
+<div>
+  <label for="scaleSlider">Scale Multiplier:</label>
+  <input type="range" id="scaleSlider" min="1" max="40" value="6" />
+</div>
+
+<div id="myCanvas"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+<script>
+  const width = 800;
+  const height = 800;
+
+  let pos, vel;
+  let counter;
+  let sidesSlider;
+  let scaleSlider;
+
+  function setup() {
+    createCanvas(width, height, myCanvas);
+    sidesSlider = select("#sidesSlider");
+    scaleSlider = select("#scaleSlider");
+
+    strokeWeight(1);
+    counter = 0;
+    // background("black");
+  }
+
+  function reset() {
+    clear();
+    let bgColor = getComputedStyle(document.body)
+      .getPropertyValue("background-color")
+      .trim();
+    let strokeColor = getComputedStyle(document.body)
+      .getPropertyValue("color")
+      .trim();
+
+    background(bgColor);
+    stroke(strokeColor);
+    pos = createVector(0, 0);
+    vel = createVector(10, 0);
+  }
+
+  function outside(p) {
+    if (pos.x > width / 2 || pos.x < -width / 2) {
+      return 1;
+    }
+    if (pos.y > height / 2 || pos.y < -height / 2) {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  function draw_poly(n) {
+    v = vel.copy();
+    let c = 0;
+    for (let i = 0; i < n; i++) {
+      v.rotate(TWO_PI / n);
+      const old = pos.copy();
+      pos.add(v);
+      c += outside(pos);
+      line(old.x, old.y, pos.x, pos.y);
+    }
+
+    if (c == n - 1) {
+      counter = 0;
+      max = 0;
+      return;
+    }
+  }
+
+  function draw() {
+    counter = counter + 1;
+    max = counter / 3;
+
+    translate(width / 2, height / 2);
+    reset();
+    for (var i = 0; i < int(max); i++) {
+      draw_poly(sidesSlider.value());
+      vel.rotate(-PI / 12);
+      vel.mult(1 + scaleSlider.value() / 100);
+    }
+  }
+</script>

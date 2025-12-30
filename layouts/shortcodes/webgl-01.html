@@ -1,0 +1,80 @@
+<style>
+  .canvas-container {
+    display: flex;
+    justify-content: center;
+  }
+</style>
+
+<div class="canvas-container">
+  <canvas id="glcanvas" width="400" height="400"></canvas>
+</div>
+
+<script>
+  const canvas = document.getElementById("glcanvas");
+  const gl = canvas.getContext("webgl");
+  if (!gl) {
+    console.error("WebGL not supported");
+  }
+
+  const vertices = new Float32Array([0.0, 0.5, -0.5, -0.5, 0.5, -0.5]);
+
+  const vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+  const vertCode = `
+    attribute vec2 coordinates;
+    void main(void) {
+      gl_Position = vec4(coordinates, 0.0, 1.0);
+    }
+  `;
+
+  const fragCode = `
+    void main(void) {
+      gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);
+    }
+  `;
+
+  const vertShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertShader, vertCode);
+  gl.compileShader(vertShader);
+
+  const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragShader, fragCode);
+  gl.compileShader(fragShader);
+
+  const shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertShader);
+  gl.attachShader(shaderProgram, fragShader);
+  gl.linkProgram(shaderProgram);
+  gl.useProgram(shaderProgram);
+
+  const coord = gl.getAttribLocation(shaderProgram, "coordinates");
+  gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(coord);
+
+  const bg = getComputedStyle(document.body)
+    .getPropertyValue("background-color")
+    .trim();
+  const match = bg.match(/rgb\\((\\d+), (\\d+), (\\d+)\\)/);
+  let r = 1,
+    g = 1,
+    b = 1;
+  if (match) {
+    r = parseInt(match[1]) / 255;
+    g = parseInt(match[2]) / 255;
+    b = parseInt(match[3]) / 255;
+  }
+  function render() {
+    const bg = getComputedStyle(document.body).getPropertyValue("background-color").trim();
+    const m = bg.match(/rgb\((\d+), (\d+), (\d+)\)/);
+    let r=1,gc=1,bc=1;
+    if (m) { r=m[1]/255; gc=m[2]/255; bc=m[3]/255; }
+    gl.clearColor(r, gc, bc, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(render);
+  }
+  render();
+</script>
+
