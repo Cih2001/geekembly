@@ -1,0 +1,55 @@
+color = black;
+
+A: line right 5cm thick 
+B: line go 5cm heading (90 + 72) thick;
+C: line go 5cm heading (90 + 2*72) dashed;
+D: line go 5cm heading (90 + 3*72) dashed;
+E: line go 5cm heading (90 + 4*72) dashed;
+
+dot at A.start "A" above rjust;
+dot at B.start "B" above ljust;
+dot at C.start " C" ljust;
+dot at D.start "D" below;
+dot at E.start "E " rjust;
+
+A1: dot at 1cm right of A.start "A′" above
+move from B.start go 1cm heading (90 + 72);
+B1: dot " B′" ljust;
+move from C.start go 1cm heading (90 + 2*72);
+C1: dot "C′" below ljust;
+move from D.start go 1cm heading (90 + 3*72);
+D1: dot "D′" below rjust;
+move from E.start go 1cm heading (90 + 4*72);
+E1: dot "E′" above rjust;
+
+text "θ" small at (A1.x + 15mm, A1.y - 1.5mm);
+text "α = 108° " small below rjust at B.start
+
+line from A1 to B1 thick "|A′B′|" aligned below;
+line from B1 to C1 dashed thin;
+line from C1 to D1 dashed thin;
+line from D1 to E1 dashed thin;
+line from E1 to A1 dashed thin;
+
+color = gray;
+
+X1: line from 10mm above A.start up 5mm thin;
+X2: line from 10mm above B.start up 5mm thin;
+text "10cm" at 1/2*dist(X1,X2) right of X1;
+arrow from last text.w left until even with X1 thin;
+arrow from last text.e right until even with X2 thin;
+
+X3: line from 4mm above A.start up 5mm thin;
+X4: line from 4mm above A1 up 5mm thin;
+arrow <-> from X3 to X4 thin "2cm" above
+
+X5: line from 4mm above B.start up 5mm thin;
+text "8cm" at 1/2*dist(X4,X5) right of X4;
+arrow from last text.w left until even with X4 thin;
+arrow from last text.e right until even with X5 thin;
+
+move from B.start go 4mm heading 72;
+Y1: line go 5mm heading 72 thin;
+move from B1.start go 4mm heading 72;
+Y2: line go 5mm heading 72 thin;
+arrow <-> from Y1 to Y2 thin "2cm" aligned above

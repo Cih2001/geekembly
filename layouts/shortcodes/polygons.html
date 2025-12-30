@@ -1,0 +1,104 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+
+<style>
+  #myCanvas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+  }
+</style>
+
+<script>
+  const width = 600;
+  let counter = 0;
+  let step = 1;
+  let pos;
+  let vel;
+  let shape_len;
+  let n;
+
+  let sidesSlider;
+  let interSlider;
+
+  let bgColor, strokeColor;
+
+  function setup() {
+    let canvas = createCanvas(width, width);
+    canvas.parent("myCanvas");
+    sidesSlider = select("#sidesSlider");
+    interSlider = select("#interSlider");
+    strokeWeight(2);
+  }
+
+  function reset() {
+    bgColor = getComputedStyle(document.body)
+      .getPropertyValue("background-color")
+      .trim();
+    strokeColor = getComputedStyle(document.body)
+      .getPropertyValue("color")
+      .trim();
+
+    background(bgColor);
+    stroke(strokeColor);
+
+    n = sidesSlider.value();
+    shape_len = (width / 2) * (2 * sin(PI / n));
+    translate(width / 2, width / 2);
+    const x = -shape_len / 2;
+    const y = -(shape_len / 2) / tan(PI / n);
+    pos = createVector(x, y);
+    vel = createVector(1, 0);
+  }
+
+  function poly(n, steps) {
+    let next = pos.copy();
+    let v = vel.copy();
+
+    for (let i = 0; i < n; i++) {
+      const prev = next.copy();
+      next = next.add(v.copy().mult(steps));
+      line(prev.x, prev.y, next.x, next.y);
+      v.rotate(TWO_PI / n);
+    }
+  }
+
+  function beta(full, per, n) {
+    const gama = ((n - 2) * PI) / n;
+    const a = per * full;
+    const b = (1 - per) * full;
+    const top = a * sin(gama);
+    const bottom = sqrt(pow(a, 2) + pow(b, 2) - 2 * a * b * cos(gama));
+    return asin(top / bottom);
+  }
+
+  function draw() {
+    reset();
+
+    let full = shape_len;
+    const per = interSlider.value() / 100;
+    const cap = 500 * (1.5 - abs(0.5 - per));
+    for (let i = 0; i < cap; i++) {
+      poly(n, full);
+      pos.add(vel.copy().mult(full * per));
+      const t = beta(full, per, n);
+      const c = sqrt(
+        pow(1 - per, 2) +
+          pow(per, 2) -
+          2 * ((1 - per) * per * cos(((n - 2) * PI) / n)),
+      );
+      vel.rotate(t);
+      full = full * c;
+    }
+  }
+</script>
+
+<div>
+  <label for="sidesSlider">Number of sides:</label>
+  <input type="range" id="sidesSlider" min="3" max="10" value="4" />
+</div>
+<div>
+  <label for="interSlider">Interpolation factor:</label>
+  <input type="range" id="interSlider" min="1" max="99" value="10" />
+</div>
+<div id="myCanvas"></div>

@@ -1,0 +1,43 @@
+color = black;
+boxwid = 10cm;
+boxht = 10cm;
+$x = 2cm;
+
+box thick
+A: dot at $x right of last box.nw; 
+B: dot at $x south of last box.ne same;
+C: dot at $x left of last box.se same;
+D: dot at $x north of last box.sw same;
+line from A to B thick dotted "line to be drawn" aligned below
+line from B to C thick dotted
+line from C to D thick dotted
+line from D to A thick dotted
+
+text "A" at (A.x + 2mm, A.y + 2mm) 
+text "B" at (B.x + 2mm, B.y - 2mm) 
+text "θ" at (A.x + 20mm, A.y - 2mm) 
+
+color = gray;
+
+X1: line thin up 50% from 10mm north of last box.nw
+X2: line same up 50% from 10mm north of last box.ne
+text at 5cm right of X1 "10cm" 
+arrow from last text.w left until even with X1 thin;
+arrow from last text.e right until even with X2 thin;
+X3: line thin up 50% from 2mm north of last box.nw
+X4: line same up 50% from 2mm north of A
+text at 1cm right of X3 "2cm" 
+arrow from last text.w left until even with X3 thin;
+arrow from last text.e right until even with X4 thin;
+
+Y1: line thin right 50% from 10mm right of last box.ne
+Y2: line same right 50% from 10mm right of last box.se
+text at 5cm south of Y1 "10cm" 
+arrow from last text.n up until even with Y1 thin
+arrow from last text.s down until even with Y2 thin
+
+Y3: line thin right 50% from 2mm right of last box.ne
+Y4: line same right 50% from 2mm right of B
+text at 1cm south of Y3 "2cm" 
+arrow from last text.n up until even with Y3 thin;
+arrow from last text.s down until even with Y4 thin;

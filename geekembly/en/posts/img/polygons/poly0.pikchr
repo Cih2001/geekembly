@@ -1,0 +1,58 @@
+color = gray
+boxwid = 5cm;
+boxht = 5cm;
+$space = 1cm;
+
+A: box dashed;
+move right $space;
+B: box dashed;
+move from last box.s down $space;
+C: box dashed;
+move from last box.w left $space;
+
+color = black;
+D: box thick;
+
+text at 2mm north of A.nw "A"
+text at 2mm north of B.nw "A"
+text at 2mm north of C.nw "A"
+text at 2mm north of D.nw "A"
+
+text at 2mm north of A.ne "B"
+text at 2mm north of B.ne "B"
+text at 2mm north of C.ne "B"
+text at 2mm north of D.ne "B"
+
+text at 2mm south of A.se "C"
+text at 2mm south of B.se "C"
+text at 2mm south of C.se "C"
+text at 2mm south of D.se "C"
+
+text at 2mm south of A.sw "D"
+text at 2mm south of B.sw "D"
+text at 2mm south of C.sw "D"
+text at 2mm south of D.sw "D"
+
+dot at A.nw color red;
+arrow from A.nw right color red thick
+text at 2mm north of last arrow " Direction Vector" small small mono ljust color red
+
+line from B.nw to B.ne thick
+dot at B.ne color red;
+arrow from B.ne down color red thick
+
+
+line from C.nw to C.ne thick
+line from C.ne to C.se thick
+dot at C.se color red;
+arrow from C.se left color red thick
+
+dot at D.nw color red;
+arrow from D.nw right color red thick
+
+text at A "First Step:" bold "Move 10cm along direction" "Then rotate direction vector 90°"
+text at B "Second Step:" bold "Move 10cm along direction" "Then rotate direction vector 90°"
+text at C "Third Step:" bold "Move 10cm along direction" "Then rotate direction vector 90°"
+text at D "Final Step:" bold "Continue same as previous steps" "Till we reach the starting point"
+
+

@@ -1,0 +1,60 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' viewBox="0 0 498.111 546.673" data-pikchr-date="20250319161943">
+<path d="M107.035,88.1461L390.5,88.1461"  style="fill:none;stroke-width:3.24;stroke:rgb(0,0,0);" />
+<path d="M390.5,88.1461L478.095,357.737"  style="fill:none;stroke-width:3.24;stroke:rgb(0,0,0);" />
+<path d="M478.095,357.737L248.768,524.353"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
+<path d="M248.768,524.353L19.44,357.737"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
+<path d="M19.44,357.737L107.035,88.1461"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
+<circle cx="107.035" cy="88.1461" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="107.035" y="78.0661" text-anchor="end" fill="rgb(0,0,0)" dominant-baseline="central">A</text>
+<circle cx="390.5" cy="88.1461" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="390.5" y="78.0661" text-anchor="start" fill="rgb(0,0,0)" dominant-baseline="central">B</text>
+<circle cx="478.095" cy="357.737" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="478.095" y="357.737" text-anchor="start" fill="rgb(0,0,0)" dominant-baseline="central"> C</text>
+<circle cx="248.768" cy="524.353" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="248.768" y="534.433" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">D</text>
+<circle cx="19.44" cy="357.737" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="19.44" y="357.737" text-anchor="end" fill="rgb(0,0,0)" dominant-baseline="central">E </text>
+<circle cx="163.728" cy="88.1461" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="163.728" y="78.0661" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">A′</text>
+<circle cx="408.019" cy="142.064" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="408.019" y="142.064" text-anchor="start" fill="rgb(0,0,0)" dominant-baseline="central"> B′</text>
+<circle cx="432.23" cy="391.06" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="432.23" y="401.14" text-anchor="start" fill="rgb(0,0,0)" dominant-baseline="central">C′</text>
+<circle cx="202.902" cy="491.03" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="202.902" y="501.11" text-anchor="end" fill="rgb(0,0,0)" dominant-baseline="central">D′</text>
+<circle cx="36.9591" cy="303.819" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="36.9591" y="293.739" text-anchor="end" fill="rgb(0,0,0)" dominant-baseline="central">E′</text>
+<text x="248.768" y="96.6501" text-anchor="middle" fill="rgb(0,0,0)" font-size="80%" dominant-baseline="central">θ</text>
+<text x="390.5" y="96.2101" text-anchor="end" fill="rgb(0,0,0)" font-size="80%" dominant-baseline="central">α = 108° </text>
+<path d="M163.728,88.1461L408.019,142.064"  style="fill:none;stroke-width:3.24;stroke:rgb(0,0,0);" />
+<text x="285.874" y="127.615" text-anchor="middle" fill="rgb(0,0,0)" transform="rotate(12.44638432 285.874,115.105)" dominant-baseline="central">|A′B′|</text>
+<path d="M408.019,142.064L432.23,391.06"  style="fill:none;stroke-width:1.4472;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
+<path d="M432.23,391.06L202.902,491.03"  style="fill:none;stroke-width:1.4472;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
+<path d="M202.902,491.03L36.9591,303.819"  style="fill:none;stroke-width:1.4472;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
+<path d="M36.9591,303.819L163.728,88.1461"  style="fill:none;stroke-width:1.4472;stroke:rgb(0,0,0);stroke-dasharray:7.2,7.2;" />
+<path d="M107.035,31.4532L107.035,3.10677"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<path d="M390.5,31.4532L390.5,3.10677"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<text x="248.768" y="17.28" text-anchor="middle" fill="rgb(128,128,128)" dominant-baseline="central">10cm</text>
+<polygon points="107.035,17.28 114.754,14.3856 114.754,20.1744" style="fill:rgb(128,128,128)"/>
+<path d="M220.14,17.28L110.895,17.28"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<polygon points="390.5,17.28 382.782,20.1744 382.782,14.3856" style="fill:rgb(128,128,128)"/>
+<path d="M277.395,17.28L386.641,17.28"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<path d="M107.035,65.469L107.035,37.1225"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<path d="M163.728,65.469L163.728,37.1225"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<polygon points="107.035,51.2957 114.754,48.4013 114.754,54.1901" style="fill:rgb(128,128,128)"/>
+<polygon points="163.728,51.2957 156.01,54.1901 156.01,48.4013" style="fill:rgb(128,128,128)"/>
+<path d="M110.895,51.2957L159.869,51.2957"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<text x="135.382" y="40.1303" text-anchor="middle" fill="rgb(128,128,128)" dominant-baseline="central">2cm</text>
+<path d="M390.5,65.469L390.5,37.1225"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<text x="277.114" y="51.2957" text-anchor="middle" fill="rgb(128,128,128)" dominant-baseline="central">8cm</text>
+<polygon points="163.728,51.2957 171.447,48.4013 171.447,54.1901" style="fill:rgb(128,128,128)"/>
+<path d="M253.729,51.2957L167.587,51.2957"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<polygon points="390.5,51.2957 382.782,54.1901 382.782,48.4013" style="fill:rgb(128,128,128)"/>
+<path d="M300.5,51.2957L386.641,51.2957"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<path d="M412.067,81.1385L439.026,72.379"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<path d="M429.586,135.057L456.545,126.297"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<polygon points="425.547,76.7587 430.685,83.205 425.179,84.9938" style="fill:rgb(128,128,128)"/>
+<polygon points="443.066,130.677 437.928,124.231 443.433,122.442" style="fill:rgb(128,128,128)"/>
+<path d="M426.739,80.4291L441.873,127.007"  style="fill:none;stroke-width:1.4472;stroke:rgb(128,128,128);" />
+<text x="434.306" y="92.5524" text-anchor="middle" fill="rgb(128,128,128)" transform="rotate(72 434.306,103.718)" dominant-baseline="central">2cm</text>
+</svg>

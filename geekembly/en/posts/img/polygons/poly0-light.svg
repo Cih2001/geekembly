@@ -1,0 +1,50 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' viewBox="0 0 661.186 680.859" data-pikchr-date="20250319161943">
+<path d="M23.3084,312.083L306.773,312.083L306.773,28.6186L23.3084,28.6186Z"  style="fill:none;stroke-width:2.16;stroke:rgb(128,128,128);stroke-dasharray:7.2,7.2;" />
+<path d="M363.466,312.083L646.93,312.083L646.93,28.6186L363.466,28.6186Z"  style="fill:none;stroke-width:2.16;stroke:rgb(128,128,128);stroke-dasharray:7.2,7.2;" />
+<path d="M363.466,652.241L646.93,652.241L646.93,368.776L363.466,368.776Z"  style="fill:none;stroke-width:2.16;stroke:rgb(128,128,128);stroke-dasharray:7.2,7.2;" />
+<path d="M23.3084,652.241L306.773,652.241L306.773,368.776L23.3084,368.776Z"  style="fill:none;stroke-width:3.24;stroke:rgb(0,0,0);" />
+<text x="23.3084" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">A</text>
+<text x="363.466" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">A</text>
+<text x="363.466" y="357.437" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">A</text>
+<text x="23.3084" y="357.437" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">A</text>
+<text x="306.773" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">B</text>
+<text x="646.93" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">B</text>
+<text x="646.93" y="357.437" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">B</text>
+<text x="306.773" y="357.437" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">B</text>
+<text x="306.773" y="323.422" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">C</text>
+<text x="646.93" y="323.422" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">C</text>
+<text x="646.93" y="663.579" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">C</text>
+<text x="306.773" y="663.579" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">C</text>
+<text x="23.3084" y="323.422" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">D</text>
+<text x="363.466" y="323.422" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">D</text>
+<text x="363.466" y="663.579" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">D</text>
+<text x="23.3084" y="663.579" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">D</text>
+<circle cx="23.3084" cy="28.6186" r="2.16" style="fill:rgb(255,0,0);stroke-width:2.16;stroke:rgb(255,0,0);" />
+<polygon points="95.3084,28.6186 78.0284,35.0986 78.0284,22.1386" style="fill:rgb(255,0,0)"/>
+<path d="M23.3084,28.6186L86.6684,28.6186"  style="fill:none;stroke-width:3.24;stroke:rgb(255,0,0);" />
+<text x="59.3084" y="17.28" text-anchor="start" font-family="monospace" fill="rgb(255,0,0)" font-size="64%" dominant-baseline="central"> Direction Vector</text>
+<path d="M363.466,28.6186L646.93,28.6186"  style="fill:none;stroke-width:3.24;stroke:rgb(0,0,0);" />
+<circle cx="646.93" cy="28.6186" r="2.16" style="fill:rgb(255,0,0);stroke-width:2.16;stroke:rgb(255,0,0);" />
+<polygon points="646.93,100.619 640.45,83.3386 653.41,83.3386" style="fill:rgb(255,0,0)"/>
+<path d="M646.93,28.6186L646.93,91.9786"  style="fill:none;stroke-width:3.24;stroke:rgb(255,0,0);" />
+<path d="M363.466,368.776L646.93,368.776"  style="fill:none;stroke-width:3.24;stroke:rgb(0,0,0);" />
+<path d="M646.93,368.776L646.93,652.241"  style="fill:none;stroke-width:3.24;stroke:rgb(0,0,0);" />
+<circle cx="646.93" cy="652.241" r="2.16" style="fill:rgb(255,0,0);stroke-width:2.16;stroke:rgb(255,0,0);" />
+<polygon points="574.93,652.241 592.21,645.761 592.21,658.721" style="fill:rgb(255,0,0)"/>
+<path d="M646.93,652.241L583.57,652.241"  style="fill:none;stroke-width:3.24;stroke:rgb(255,0,0);" />
+<circle cx="23.3084" cy="368.776" r="2.16" style="fill:rgb(255,0,0);stroke-width:2.16;stroke:rgb(255,0,0);" />
+<polygon points="95.3084,368.776 78.0284,375.256 78.0284,362.296" style="fill:rgb(255,0,0)"/>
+<path d="M23.3084,368.776L86.6684,368.776"  style="fill:none;stroke-width:3.24;stroke:rgb(255,0,0);" />
+<text x="165.041" y="150.191" text-anchor="middle" font-weight="bold" fill="rgb(0,0,0)" dominant-baseline="central">First Step:</text>
+<text x="165.041" y="170.351" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Move 10cm along direction</text>
+<text x="165.041" y="190.511" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Then rotate direction vector 90°</text>
+<text x="505.198" y="150.191" text-anchor="middle" font-weight="bold" fill="rgb(0,0,0)" dominant-baseline="central">Second Step:</text>
+<text x="505.198" y="170.351" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Move 10cm along direction</text>
+<text x="505.198" y="190.511" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Then rotate direction vector 90°</text>
+<text x="505.198" y="490.348" text-anchor="middle" font-weight="bold" fill="rgb(0,0,0)" dominant-baseline="central">Third Step:</text>
+<text x="505.198" y="510.508" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Move 10cm along direction</text>
+<text x="505.198" y="530.668" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Then rotate direction vector 90°</text>
+<text x="165.041" y="490.348" text-anchor="middle" font-weight="bold" fill="rgb(0,0,0)" dominant-baseline="central">Final Step:</text>
+<text x="165.041" y="510.508" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Continue same as previous steps</text>
+<text x="165.041" y="530.668" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Till we reach the starting point</text>
+</svg>
